@@ -297,7 +297,7 @@
     // 2. Seiten-Erkennung anhand des document.title
     function getPageKey() {
         const title = document.title.toLowerCase();
-        if (title.includes("startseite") || title.includes("labs")) return "index";
+        if (title.includes("startseite") || title.includes("labs") || title.includes("blopperbold")) return "index";
         if (title.includes("100 prozent") || title.includes("risiko")) return "100prozent";
         if (title.includes("casino")) return "gambl";
         if (title.includes("exponentiell") || title.includes("3. expo") || title.includes("3expo")) return "3expo";
