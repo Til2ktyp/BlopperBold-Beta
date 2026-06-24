@@ -1130,7 +1130,7 @@ function spinReels(type, cb) {
 
 // ─── CORE GAME ────────────────────────────────────────────
 function spielen(cb, fast = false) {
-  if (geld < einsatz) { log('❌ Nicht genug Geld!'); if (cb) cb(); return; }
+  if (geld < einsatz) { log('❌ Nicht genug Geld!'); stopAutoSpin(); if (cb) cb(); return; }
   if (isSpinning && !fast) return;
 
   geld -= einsatz;
@@ -1182,7 +1182,7 @@ function spielen(cb, fast = false) {
     setReelSyms(getResultSyms(type));
     log(msg);
     setWinMsg(type, gewinn);
-    if (gewinn > 0) openDouble(gewinn);
+    if (gewinn > 0 && !autoActive) openDouble(gewinn);
     update(); saveGame();
     if (cb) cb();
   } else {
@@ -1259,17 +1259,21 @@ function startAutoSpin(n) {
   autoTotal = n;
   DOM.autoStatus.classList.add('active');
   DOM.stopBtn.style.display = 'block';
-  DOM.auto100Btn.style.display = n === 100 ? 'none' : '';
+  DOM.auto100Btn.style.display = (n === 100 || n === Infinity) ? 'none' : '';
+  DOM.spinBtn.disabled = true;
+  DOM.maxBetBtn.disabled = true;
   doAutoStep();
 }
 
 function doAutoStep() {
   if (!autoActive || autoRemaining <= 0) { stopAutoSpin(); return; }
   spielen(() => {
-    autoRemaining--;
-    const pct = ((autoTotal - autoRemaining) / autoTotal * 100).toFixed(0);
-    DOM.autoBar.style.width = pct + '%';
-    DOM.autoLabel.textContent = autoRemaining + ' verbleibend';
+    if (autoRemaining !== Infinity) {
+      autoRemaining--;
+    }
+    const pct = autoRemaining === Infinity ? 100 : ((autoTotal - autoRemaining) / autoTotal * 100);
+    DOM.autoBar.style.width = (isNaN(pct) ? 100 : pct.toFixed(0)) + '%';
+    DOM.autoLabel.textContent = autoRemaining === Infinity ? 'Debug: Unbegrenzt' : autoRemaining + ' verbleibend';
     if (autoRemaining > 0 && autoActive) {
       autoTimer = setTimeout(doAutoStep, 40);
     } else {
@@ -1285,6 +1289,8 @@ function stopAutoSpin() {
   DOM.autoStatus.classList.remove('active');
   DOM.stopBtn.style.display = 'none';
   DOM.auto100Btn.style.display = '';
+  DOM.spinBtn.disabled = false;
+  DOM.maxBetBtn.disabled = false;
 }
 
 // ─── BANK ─────────────────────────────────────────────────
@@ -1407,6 +1413,7 @@ function handleReset() {
   else if (resetClicks === 2) { log('Reset: 2/3'); btn.textContent = '(2/3)'; }
   else {
     if (confirm('Möchtest du das Spiel wirklich zurücksetzen? Alle Statistiken gehen verloren.')) {
+      stopAutoSpin();
       geld = 100; bank = 0; start = 100;
       totalSpins = totalWins = totalSpent = biggestWin = 0;
       winStreak = lossStreak = bestStreak = 0;
@@ -1479,6 +1486,9 @@ function loadGame() {
         winStreak, lossStreak, bestStreak, progressiveJP, history} = s);
     }
   } catch(e) {}
+  if (!Array.isArray(history)) {
+    history = [];
+  }
   renderDots(); update();
 
   // 5-Sekunden-Timer für die UI-Transition
@@ -1513,7 +1523,15 @@ function transitionJackpot() {
 function log(text) {
   const d = DOM.log;
   const ts = new Date().toLocaleTimeString('de', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
-  d.innerHTML += `<span style="color:rgba(255,255,255,0.35);font-size:0.75rem">${ts}</span> ${text}<br>`;
+  
+  const line = document.createElement('div');
+  line.innerHTML = `<span style="color:rgba(255,255,255,0.35);font-size:0.75rem">${ts}</span> ${text}`;
+  d.appendChild(line);
+  
+  while (d.children.length > 100) {
+    d.removeChild(d.firstChild);
+  }
+  
   d.scrollTop = d.scrollHeight;
 }
 
@@ -1542,6 +1560,16 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     closeSlider();
     closeAufklaerung();
+  }
+  if (e.shiftKey && (e.key === 'D' || e.key === 'd')) {
+    e.preventDefault();
+    if (autoActive) {
+      stopAutoSpin();
+      log('⚙️ Debug-Modus beendet');
+    } else {
+      log('⚙️ Debug-Modus gestartet (Endlos-Gamble)');
+      startAutoSpin(Infinity);
+    }
   }
 });
 document.addEventListener('contextmenu', e => {
