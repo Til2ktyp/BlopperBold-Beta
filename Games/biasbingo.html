@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Bias Bingo</title>
+<script src="consent.js"></script>
+<style>
+    :root {
+        --bg-1: #0b0f19;
+        --bg-2: #072a3a;
+        --bg-3: #043e4f;
+        --border: rgba(255, 255, 255, 0.14);
+        --text: #ffffff;
+        --muted: rgba(204, 251, 241, 0.65);
+        --accent: #e5a93b;
+        --accent-2: #2dd4bf;
+        --good: #10b981;
+        --danger: #f43f5e;
+        --dark: #0b0f19;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    button,
+    a,
+    [role="button"] {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        padding: 96px 18px 54px;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+        color: var(--text);
+        text-align: center;
+        background:
+            radial-gradient(circle at 12% 18%, rgba(45, 212, 191, 0.3), transparent 28%),
+            radial-gradient(circle at 88% 14%, rgba(229, 169, 59, 0.22), transparent 24%),
+            radial-gradient(circle at 50% 100%, rgba(14, 165, 233, 0.25), transparent 33%),
+            linear-gradient(135deg, var(--bg-1), var(--bg-2) 48%, var(--bg-3));
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.13;
+        background-image:
+            linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+        background-size: 46px 46px;
+        mask-image: radial-gradient(circle at center, black, transparent 78%);
+    }
+
+    .back-home-btn {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1001;
+        background: var(--accent);
+        color: var(--dark);
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-weight: 900;
+        text-decoration: none;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        transition: transform 0.18s ease, background 0.18s ease;
+    }
+
+    .back-home-btn:hover {
+        background: #fda502;
+        transform: translateX(2px);
+    }
+
+    .page-shell {
+        position: relative;
+        z-index: 1;
+        width: min(1180px, 100%);
+        margin: 0 auto;
+    }
+
+    .hero {
+        margin-bottom: 24px;
+    }
+
+    .eyebrow {
+        display: inline-flex;
+        margin-bottom: 12px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(251, 197, 49, 0.15);
+        color: #fde68a;
+        border: 1px solid rgba(251, 197, 49, 0.18);
+        font-size: 0.82rem;
+        font-weight: 950;
+        text-transform: uppercase;
+    }
+
+    h1 {
+        margin: 0;
+        color: var(--accent);
+        font-size: clamp(2.4rem, 7vw, 5rem);
+        line-height: 0.95;
+        font-weight: 950;
+    }
+
+    .subtitle {
+        max-width: 760px;
+        margin: 14px auto 0;
+        color: var(--muted);
+        font-size: clamp(1rem, 2.4vw, 1.18rem);
+        line-height: 1.55;
+    }
+
+    .game-grid {
+        display: grid;
+        grid-template-columns: minmax(280px, 0.9fr) minmax(320px, 1.1fr) minmax(260px, 0.8fr);
+        gap: 18px;
+        align-items: start;
+    }
+
+    .box {
+        width: 100%;
+        padding: 22px;
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+        backdrop-filter: blur(18px);
+    }
+
+    h2 {
+        margin: 0 0 14px;
+        color: var(--accent);
+        font-size: 1.25rem;
+    }
+
+    .stats {
+        display: grid;
+        gap: 10px;
+    }
+
+    .stat {
+        padding: 14px;
+        border-radius: 15px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.08);
+        text-align: left;
+    }
+
+    .stat strong {
+        display: block;
+        color: var(--muted);
+        font-size: 0.74rem;
+        text-transform: uppercase;
+    }
+
+    .stat span {
+        display: block;
+        margin-top: 5px;
+        font-size: 1.65rem;
+        font-weight: 950;
+    }
+
+    .scenario {
+        min-height: 330px;
+        display: grid;
+        align-content: center;
+        gap: 15px;
+    }
+
+    .bias-tag {
+        justify-self: center;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(56, 189, 248, 0.16);
+        color: #bae6fd;
+        border: 1px solid rgba(56, 189, 248, 0.24);
+        font-size: 0.8rem;
+        font-weight: 950;
+        text-transform: uppercase;
+    }
+
+    .scenario-title {
+        margin: 0;
+        font-size: clamp(1.45rem, 4vw, 2.4rem);
+        line-height: 1.05;
+        font-weight: 950;
+    }
+
+    .scenario-text {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.58;
+    }
+
+    .choice-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 8px;
+    }
+
+    button {
+        min-height: 48px;
+        padding: 12px 14px;
+        border: 0;
+        border-radius: 13px;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 950;
+        background: linear-gradient(135deg, var(--accent-2), #2563eb);
+        color: #07111f;
+        box-shadow: 0 10px 24px rgba(37, 99, 235, 0.26);
+        transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.04);
+        box-shadow: 0 14px 30px rgba(37, 99, 235, 0.34);
+    }
+
+    button.safe {
+        background: linear-gradient(135deg, var(--good), #20bf6b);
+    }
+
+    button.risky {
+        background: linear-gradient(135deg, var(--accent), #f59e0b);
+    }
+
+    button.secondary {
+        background: rgba(255, 255, 255, 0.12);
+        color: var(--text);
+        border: 1px solid var(--border);
+        box-shadow: none;
+    }
+
+    button.danger {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+    }
+
+    .explain {
+        min-height: 90px;
+        margin-top: 16px;
+        padding: 14px;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(5, 10, 20, 0.52);
+        color: rgba(255, 255, 255, 0.86);
+        line-height: 1.55;
+        text-align: left;
+    }
+
+    .bingo {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .tile {
+        aspect-ratio: 1;
+        display: grid;
+        place-items: center;
+        padding: 8px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--muted);
+        font-size: 0.78rem;
+        font-weight: 900;
+        line-height: 1.18;
+        transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease;
+    }
+
+    .tile.hit {
+        background: linear-gradient(135deg, rgba(38, 222, 129, 0.9), rgba(56, 189, 248, 0.76));
+        color: #07111f;
+        transform: scale(1.03);
+    }
+
+    .log {
+        max-height: 220px;
+        overflow: auto;
+        margin-top: 16px;
+        padding: 14px;
+        border-radius: 14px;
+        background: rgba(5, 10, 20, 0.72);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.86);
+        line-height: 1.55;
+        font-size: 0.9rem;
+        text-align: left;
+    }
+
+    @media (max-width: 980px) {
+        .game-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 560px) {
+        body {
+            padding-top: 86px;
+        }
+
+        .choice-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+<style>
+    .dopamine-burst{position:fixed;z-index:9999;left:0;top:0;width:14px;height:14px;border:2px solid rgba(229,169,59,.95);border-radius:999px;pointer-events:none;transform:translate(-50%,-50%);animation:dopamineRing .55s ease-out forwards}.dopamine-spark{position:fixed;z-index:9999;left:0;top:0;width:7px;height:7px;border-radius:999px;background:var(--accent);pointer-events:none;transform:translate(-50%,-50%);animation:dopamineSpark .58s ease-out forwards}.dopamine-hit{animation:dopamineHit .22s ease}@keyframes dopamineRing{to{width:110px;height:110px;opacity:0}}@keyframes dopamineSpark{to{transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y))) scale(.2);opacity:0}}@keyframes dopamineHit{50%{filter:brightness(1.35) saturate(1.4);transform:scale(1.035)}}
+</style>
+<style id="bb-touch-zoom-guard-style">
+    html,
+    body {
+        touch-action: manipulation;
+        -ms-touch-action: manipulation;
+        -webkit-text-size-adjust: 100%;
+    }
+</style>
+<style id="bb-hyper-style">
+.bb-hyper-toggle{position:fixed;top:20px;right:18px;z-index:12000;width:48px;height:48px;border:1px solid rgba(255,255,255,.22);border-radius:16px;background:linear-gradient(145deg,rgba(15,23,42,.86),rgba(99,102,241,.72));color:#fff;font-size:1.25rem;font-weight:950;display:grid;place-items:center;cursor:pointer;box-shadow:0 16px 42px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.2);backdrop-filter:blur(18px);-webkit-tap-highlight-color:transparent;touch-action:manipulation}.bb-hyper-toggle:hover{transform:translateY(-2px);filter:brightness(1.08)}.bb-hyper-toggle.is-on{background:linear-gradient(135deg,var(--accent),var(--accent-2) 52%,#a855f7);box-shadow:0 0 28px rgba(229,169,59,.35),0 18px 48px rgba(45,212,191,.28)}.bb-hyper-panel{position:fixed;top:76px;right:18px;z-index:12001;width:min(340px,calc(100vw - 36px));padding:16px;border:1px solid rgba(255,255,255,.22);border-radius:20px;background:linear-gradient(145deg,rgba(15,23,42,.94),rgba(49,46,129,.88));color:#fff;box-shadow:0 28px 80px rgba(0,0,0,.44);backdrop-filter:blur(24px);display:none;transform:scale(.92) translateY(-8px);opacity:0;filter:blur(10px)}.bb-hyper-panel.show{display:block;animation:bbHyperPanelIn .28s cubic-bezier(.18,.9,.24,1) forwards}.bb-hyper-panel.closing{display:block;animation:bbHyperPanelOut .2s ease forwards}.bb-hyper-title{margin:0 0 4px;font-size:1rem;font-weight:950;color:#fde68a}.bb-hyper-subtitle{margin:0 0 14px;color:rgba(255,255,255,.72);font-size:.84rem;line-height:1.35}.bb-hyper-row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px;border:1px solid rgba(255,255,255,.14);border-radius:14px;background:rgba(255,255,255,.08);margin-top:10px}.bb-hyper-row span{font-size:.92rem;font-weight:850}.bb-hyper-switch{position:relative;width:56px;height:31px;flex:0 0 auto}.bb-hyper-switch input{position:absolute;opacity:0;inset:0}.bb-hyper-slider{position:absolute;inset:0;border-radius:999px;background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);transition:.2s}.bb-hyper-slider:before{content:"";position:absolute;width:25px;height:25px;left:3px;top:3px;border-radius:999px;background:#fff;box-shadow:0 5px 12px rgba(0,0,0,.25);transition:.22s cubic-bezier(.18,.9,.24,1)}.bb-hyper-switch input:checked + .bb-hyper-slider{background:linear-gradient(135deg,var(--accent),var(--accent-2))}.bb-hyper-switch input:checked + .bb-hyper-slider:before{transform:translateX(25px)}.bb-hyper-note{margin:12px 0 0;color:rgba(255,255,255,.62);font-size:.78rem;line-height:1.35}.bb-hyper-on h1,.bb-hyper-on .hero h1{animation:bbHyperTitle 2.2s ease-in-out infinite;text-shadow:0 0 18px rgba(229,169,59,.55),0 0 34px rgba(45,212,191,.34)}.bb-hyper-on button:not(.bb-hyper-toggle),.bb-hyper-on .stat,.bb-hyper-on .status-card,.bb-hyper-on .probability-card,.bb-hyper-on .box,.bb-hyper-on .game-panel,.bb-hyper-on .stat-box,.bb-hyper-on .info-pill{animation:bbHyperBreath 1.9s ease-in-out infinite}.bb-hyper-on .chart,.bb-hyper-on .chart-container,.bb-hyper-on canvas,.bb-hyper-on .progress-bar-container,.bb-hyper-on .track,.bb-hyper-on .card{filter:saturate(1.28);box-shadow:0 0 34px rgba(45,212,191,.22),0 0 54px rgba(229,169,59,.14)}.bb-hyper-on::after{content:"";position:fixed;inset:-20%;z-index:11990;pointer-events:none;background:linear-gradient(115deg,transparent 0 38%,rgba(255,255,255,.14) 44%,transparent 52% 100%);mix-blend-mode:screen;transform:translateX(-120%);animation:bbHyperSweep 2.8s linear infinite}.bb-hyper-spark{position:fixed;z-index:11999;left:0;top:0;width:8px;height:8px;border-radius:999px;pointer-events:none;background:var(--bb-c,var(--accent));box-shadow:0 0 16px var(--bb-c,var(--accent)),0 0 28px rgba(255,255,255,.34);transform:translate(-50%,-50%);animation:bbHyperSpark .9s ease-out forwards}.bb-hyper-star{position:fixed;z-index:11998;left:0;top:0;width:5px;height:5px;border-radius:999px;background:#fff;pointer-events:none;box-shadow:0 0 14px #fff,0 0 28px rgba(229,169,59,.72);animation:bbHyperFall 1.9s linear forwards}.bb-hyper-toast{position:fixed;z-index:12002;left:50%;bottom:22px;transform:translateX(-50%) scale(.92);padding:10px 14px;border-radius:999px;background:rgba(15,23,42,.86);border:1px solid rgba(255,255,255,.18);color:#fde68a;font-weight:950;box-shadow:0 18px 44px rgba(0,0,0,.35);opacity:0;pointer-events:none;animation:bbHyperToast .9s ease forwards}@keyframes bbHyperPanelIn{to{opacity:1;transform:scale(1) translateY(0);filter:blur(0)}}@keyframes bbHyperPanelOut{from{opacity:1;transform:scale(1);filter:blur(0)}to{opacity:0;transform:scale(.94) translateY(-8px);filter:blur(10px)}}@keyframes bbHyperTitle{0%,100%{filter:hue-rotate(0) saturate(1)}50%{filter:hue-rotate(55deg) saturate(1.8);transform:translateY(-1px) scale(1.012)}}@keyframes bbHyperBreath{0%,100%{filter:saturate(1);box-shadow:inherit}50%{filter:saturate(1.35) brightness(1.08);box-shadow:0 0 26px rgba(229,169,59,.18),0 0 42px rgba(45,212,191,.14)}}@keyframes bbHyperSweep{from{transform:translateX(-120%)}to{transform:translateX(120%)}}@keyframes bbHyperSpark{to{transform:translate(calc(-50% + var(--bb-x)),calc(-50% + var(--bb-y))) scale(.18) rotate(240deg);opacity:0}}@keyframes bbHyperFall{to{transform:translate(var(--bb-x),120vh) rotate(260deg);opacity:0}}@keyframes bbHyperToast{20%,78%{opacity:1;transform:translateX(-50%) scale(1)}to{opacity:0;transform:translateX(-50%) scale(.96) translateY(8px)}}.bb-canary-page .bb-hyper-toggle{top:76px}.bb-canary-page .bb-hyper-panel{top:132px}@media(max-width:720px){.bb-hyper-toggle{top:72px;right:12px;width:44px;height:44px}.bb-hyper-panel{top:124px;right:12px;width:calc(100vw - 24px)}}@media(prefers-reduced-motion:reduce){.bb-hyper-on h1,.bb-hyper-on .hero h1,.bb-hyper-on button,.bb-hyper-on .stat,.bb-hyper-on .status-card,.bb-hyper-on .probability-card,.bb-hyper-on .box,.bb-hyper-on .game-panel,.bb-hyper-on .stat-box,.bb-hyper-on .info-pill,.bb-hyper-on::after,.bb-hyper-spark,.bb-hyper-star,.bb-hyper-toast{animation:none!important}}
+</style>
+
+<style id="bb-hyper-button-fix">
+.bb-hyper-toggle{border:0!important;display:grid!important;place-items:center!important;text-align:center!important;line-height:1!important;padding:0!important;box-shadow:0 10px 24px rgba(56,189,248,.24)!important}.bb-hyper-toggle::before,.bb-hyper-toggle::after{display:none!important}.bb-hyper-toggle svg,.bb-hyper-toggle img,.bb-hyper-toggle span{display:block;margin:auto}.bb-hyper-toggle:focus-visible{outline:2px solid rgba(255,255,255,.55);outline-offset:3px}@media(max-width:720px){.bb-hyper-toggle{font-size:1.12rem!important}}
+</style>
+<link rel="stylesheet" href="../tutorial.css">
+</head>
+<body><button class="bb-hyper-toggle" id="bbHyperToggle" type="button" aria-label="Hyperaktivitäts-Einstellungen" aria-expanded="false">⚙</button><div class="bb-hyper-panel" id="bbHyperPanel" aria-hidden="true"><p class="bb-hyper-title" id="bbHyperTitle">Hyper-Einstellungen</p><p class="bb-hyper-subtitle">Dopamin-Spikes, Glitzer, Pop und Klick-Explosionen. Kann jederzeit wieder ruhig gestellt werden.</p><label class="bb-hyper-row"><span>Hyperaktivitätsmodus</span><span class="bb-hyper-switch"><input id="bbHyperMode" type="checkbox"><span class="bb-hyper-slider"></span></span></label><label class="bb-hyper-row"><span>Klick-Explosionen</span><span class="bb-hyper-switch"><input id="bbHyperClicks" type="checkbox"><span class="bb-hyper-slider"></span></span></label><label class="bb-hyper-row"><span>Glitzerregen</span><span class="bb-hyper-switch"><input id="bbHyperAmbient" type="checkbox"><span class="bb-hyper-slider"></span></span></label><p class="bb-hyper-note">Die Einstellung wird pro Seite gespeichert.</p></div>
+
+<a class="back-home-btn" href="https://blopperbold.org" aria-label="Zurück zu BlopperBold">← BlopperBold</a>
+
+<main class="page-shell">
+    <section class="hero">
+        <div class="eyebrow">Brainschimmel mit Nutzwert</div>
+        <h1>Bias Bingo</h1>
+        <p class="subtitle">Du bekommst freche Angebote, FOMO-Fallen und kleine Finanz-Verführungen. Erkenne den Denkfehler, bevor dein innerer Taschenrechner beleidigt kündigt.</p>
+    </section>
+
+    <div class="game-grid">
+        <section class="box">
+            <h2>Kontrollraum</h2>
+            <div class="stats">
+                <div class="stat"><strong>Punkte</strong><span id="points">0</span></div>
+                <div class="stat"><strong>Runde</strong><span id="round">1 / 10</span></div>
+                <div class="stat"><strong>Geld gerettet</strong><span id="saved">0 €</span></div>
+                <div class="stat"><strong>Hype-Schaden</strong><span id="damage">0 €</span></div>
+                <div class="stat"><strong>Highscore</strong><span id="highscoreStat">0</span></div>
+                <div class="stat"><strong>Entscheidungen</strong><span id="totalDecisionsStat">0</span></div>
+            </div>
+            <button class="secondary" type="button" id="newRunBtn" style="width: 100%; margin-top: 14px;">Neue Runde</button>
+            <button class="danger" type="button" id="resetBtn" style="width: 100%; margin-top: 10px;">Highscore Reset</button>
+        </section>
+
+        <section class="box scenario" aria-label="Aktuelle Entscheidung">
+            <div class="bias-tag" id="biasTag">Bias</div>
+            <p class="scenario-title" id="title">Lade Angebot...</p>
+            <p class="scenario-text" id="text"></p>
+            <div class="choice-row">
+                <button class="risky" type="button" id="trapBtn">Rein da</button>
+                <button class="safe" type="button" id="smartBtn">Kurz denken</button>
+            </div>
+            <div class="explain" id="explain">Wähle eine Seite. Danach sagt dir das Spiel, welcher Denkfehler gerade versucht hat, am Steuer zu sitzen.</div>
+        </section>
+
+        <section class="box">
+            <h2>Bias Bingo</h2>
+            <div class="bingo" id="bingo"></div>
+            <div class="log" id="log"></div>
+        </section>
+    </div>
+</main>
+
+<script>
+    const scenarioRows = [
+        ['Sunk Cost', 'Du hast schon 80 Euro in ein kaputtes Projekt gesteckt.', 'Jetzt noch mal 40 Euro, weil sonst waren die 80 Euro ja umsonst. Sehr elegante Selbstverarschung mit Quittung.', 'Noch 40 Euro', 'Stoppen', 40, 'Vergangene Kosten sind weg. Entscheidend ist nur, ob die nächsten 40 Euro ab jetzt sinnvoll sind.'],
+        ['FOMO', 'Nur heute: Kursrakete 9000.', 'Ein Chat schreit "letzte Chance", drei Leute posten grüne Screenshots, und niemand zeigt den Einstiegskurs.', 'Jetzt kaufen', 'Plan prüfen', 120, 'Dringlichkeit ist kein Argument. Gute Entscheidungen überleben zehn Minuten Nachdenken.'],
+        ['Ankereffekt', 'Die Jacke kostete mal 220 Euro, jetzt nur 89.', 'Du wolltest eigentlich keine Jacke. Aber der alte Preis steht da wie ein sehr lauter Zaunpfahl.', 'Mitnehmen', 'Bedarf checken', 89, 'Der alte Preis ist nur ein Anker. Der echte Wert ist, ob du sie brauchst und tragen wirst.'],
+        ['Gambler Fallacy', 'Fünfmal verloren. Jetzt MUSS Gewinn kommen.', 'Das Zufallsding hat leider kein Gedächtnis und schuldet dir keinen dramatischen Ausgleich.', 'Einsatz erhöhen', 'Aufhören', 60, 'Unabhängige Zufälle werden nicht fairer, nur weil die letzten Runden wehgetan haben.'],
+        ['Verlustaversion', 'Eine Aktie ist -35 Prozent. Verkaufen fühlt sich verboten an.', 'Dein Depot macht Theater, weil ein realisierter Verlust echter aussieht als ein roter Bildschirm.', 'Blind halten', 'Neu bewerten', 150, 'Ob du heute kaufen würdest, ist oft die ehrlichere Frage als ob du damals gekauft hast.'],
+        ['Status Quo', 'Dein Vertrag ist seit drei Jahren zu teuer.', 'Wechseln nervt 20 Minuten. Nicht wechseln kostet jeden Monat ein kleines "ach egal".', 'So lassen', 'Wechseln', 180, 'Bequemlichkeit hat einen Preis. Wiederkehrende Kosten sind leise, aber sehr fleißig.'],
+        ['Social Proof', 'Alle kaufen dieses Tool.', 'Es macht hübsche Dashboards, die du nicht brauchst, aber die Screenshots sehen erwachsen aus.', 'Abo starten', 'Use Case suchen', 96, 'Viele Nutzer beweisen Popularität, nicht Passung zu deinem Problem.'],
+        ['Overconfidence', 'Du bist dir zu 97 Prozent sicher.', 'Begründung: Bauchgefühl, Kaffee, ein halber Artikel und der Satz "wird schon".', 'All in', 'Klein testen', 75, 'Sicherheit ohne Test ist oft nur gute Laune in Business-Schuhen.'],
+        ['Framing', 'Nur 2 Euro pro Tag.', 'Klingt niedlich. Pro Jahr sind es 730 Euro. Der Satz trägt eine Tarnjacke.', 'Abo nehmen', 'Jahr rechnen', 730, 'Tagespreise machen große Beträge klein. Jahrespreise machen Nebel wieder zu Zahlen.'],
+        ['Sunk Cost', 'Du sitzt seit 90 Minuten in einem schlechten Film.', 'Der Film bleibt schlecht, aber dein Kopf ruft: Ticket bezahlt, jetzt leiden wir professionell.', 'Weitergucken', 'Rausgehen', 14, 'Zeit, die schon weg ist, muss nicht mit noch mehr Zeit verteidigt werden.'],
+        ['FOMO', 'Ein Sneaker-Drop läuft in drei Minuten aus.', 'Du hast keine Ahnung von der Größe, aber der Countdown macht aus Stoff plötzlich eine Lebensprüfung.', 'Sofort kaufen', 'Warenkorb parken', 160, 'Countdowns sollen Denken verkürzen. Pausieren ist eine Kaufentscheidung mit Gehirn.'],
+        ['Ankereffekt', 'Das Handy kostet 999 Euro, aber mit Vertrag "nur" 39 Euro monatlich.', 'Die kleine Monatszahl winkt freundlich, der Gesamtpreis versteckt sich hinter Nebelmaschine.', 'Vertrag nehmen', 'Gesamtpreis rechnen', 468, 'Ein Anker kann klein aussehen. Die Summe entscheidet, nicht die Verpackung.'],
+        ['Gambler Fallacy', 'Der Zufallsgenerator hat dreimal Rot gezeigt.', 'Dein Kopf zieht einen kleinen Richterhammer und erklärt Schwarz jetzt für überfällig.', 'Auf Schwarz setzen', 'Wahrscheinlichkeit prüfen', 50, 'Zufall hat keine To-do-Liste. Jede Runde startet neu.'],
+        ['Verlustaversion', 'Du hast ein Abo nie genutzt, aber Kündigen fühlt sich wie Niederlage an.', 'Jeden Monat gehen 12 Euro raus, damit dein Stolz nicht kurz zuckt.', 'Behalten', 'Kündigen', 144, 'Ein unnützes Abo wird nicht besser, nur weil Kündigen unangenehm ist.'],
+        ['Status Quo', 'Dein Stromtarif ist alt und teuer.', 'Der Wechselbutton ist langweilig. Die Rechnung ist dafür sehr motiviert.', 'Nichts tun', 'Tarif prüfen', 220, 'Nichtstun ist auch eine Entscheidung, oft nur mit schlechterem Marketing.'],
+        ['Social Proof', 'Die App hat 4,9 Sterne.', 'Du brauchst sie nicht, aber tausende Bewertungen flüstern: Vielleicht bist du das Problem.', 'Installieren', 'Problem benennen', 48, 'Bewertungen beantworten nicht, ob die App dein konkretes Problem löst.'],
+        ['Overconfidence', 'Du willst ohne Probe eine große Präsentation halten.', 'Du kennst das Thema, also wird dein Mund bestimmt automatisch ein Meisterwerk produzieren.', 'Nicht proben', 'Kurz üben', 90, 'Kompetenz ist gut. Eine Probe schützt vor Live-Überraschungen.'],
+        ['Framing', 'Das Fitnessstudio wirbt mit "nur 1,30 Euro am Tag".', 'Klingt wie Kleingeld, bis dein Konto zwölf Monate lang Liegestütze macht.', 'Abschließen', 'Jahr prüfen', 474, 'Tagessätze beruhigen. Jahreskosten erklären.'],
+        ['Sunk Cost', 'Du hast drei Stunden an einem Logo gefeilt.', 'Es sieht immer noch aus wie ein Unfall mit Schriftart, aber Löschen fühlt sich frech an.', 'Weiterfeilen', 'Neu starten', 80, 'Manchmal ist ein Neustart günstiger als Reparaturstolz.'],
+        ['FOMO', 'Ein Onlinekurs verspricht KI-Reichtum bis Sonntag.', 'Die Verkaufsseite benutzt fünf Ausrufezeichen und ein Bild von einem Laptop am Pool.', 'Kurs kaufen', 'Beweise suchen', 299, 'Große Versprechen brauchen große Belege, nicht große Schrift.'],
+        ['Ankereffekt', 'Ein Möbelstück ist von 1200 auf 499 Euro reduziert.', 'Dein Zimmer hat keinen Platz, aber der Rabatt hat sich schon Schuhe ausgezogen.', 'Kaufen', 'Platz messen', 499, 'Rabatt spart nur Geld, wenn der Kauf vorher sinnvoll war.'],
+        ['Gambler Fallacy', 'Du hast beim Quiz viermal falsch geraten.', 'Jetzt fühlt sich Antwort C an, als müsste sie karmisch dran sein.', 'C nehmen', 'Frage lesen', 20, 'Vergangene Fehlgriffe machen die nächste Antwort nicht magischer.'],
+        ['Verlustaversion', 'Du willst eine gebrauchte Konsole nicht unter Einkaufspreis verkaufen.', 'Der Markt sagt 180 Euro. Dein Stolz sagt 260 Euro und sitzt beleidigt am Tisch.', 'Zu teuer listen', 'Realistisch verkaufen', 80, 'Der Markt bezahlt keinen Erinnerungswert.'],
+        ['Status Quo', 'Dein Passwort ist seit Jahren gleich.', 'Ändern nervt, bis irgendwann jemand anderes sehr motiviert ist.', 'So lassen', 'Passwortmanager nutzen', 120, 'Bequemlichkeit ist bei Sicherheit oft die teuerste Option.'],
+        ['Social Proof', 'Ein Restaurant ist voll.', 'Du stellst dich an, obwohl du gar keinen Hunger hast. Menschenmenge gleich Qualität, denkt dein Bauch.', 'Anstellen', 'Eigene Lust checken', 28, 'Beliebtheit kann ein Signal sein, aber kein Ersatz für deinen Bedarf.'],
+        ['Overconfidence', 'Du glaubst, du kannst den Markt timen.', 'Du hast zwei Charts gesehen und fühlst dich kurz wie ein sehr gut angezogener Algorithmus.', 'Alles umschichten', 'Regel nutzen', 250, 'Markttiming fühlt sich schlau an, bis Gebühren und Zufall mitreden.'],
+        ['Framing', 'Ein Kredit wird als "mehr finanzieller Spielraum" verkauft.', 'Schöner Satz. Übersetzung: Zukunfts-Geld wird heute schon verplant.', 'Unterschreiben', 'Zinsen rechnen', 640, 'Positive Wörter ändern nicht die Rückzahlung.'],
+        ['Sunk Cost', 'Du bist in einer Warteschlange bei Minute 42.', 'Jetzt abbrechen fühlt sich an, als hättest du 42 Minuten weggeworfen. Weiterwarten wirft vielleicht noch mehr weg.', 'Bleiben', 'Neu entscheiden', 30, 'Die Frage ist nicht, wie lange du schon wartest, sondern wie sinnvoll weiteres Warten ist.'],
+        ['FOMO', 'Alle posten ihre Jahresziele am 1. Januar.', 'Du willst plötzlich auch zehn Projekte starten, obwohl dein Kalender schon leise brennt.', 'Alles starten', 'Drei wählen', 100, 'Motivation ist laut. Kapazität ist ehrlich.'],
+        ['Ankereffekt', 'Der Verkäufer nennt zuerst 500 Euro.', 'Danach wirken 350 Euro fair, obwohl du vorher 220 Euro geplant hattest.', '350 zahlen', 'Budget halten', 130, 'Die erste Zahl ist nicht automatisch der Mittelpunkt der Wahrheit.'],
+        ['Gambler Fallacy', 'Du hast dreimal hintereinander Pech beim Parken gehabt.', 'Heute fühlst du dich fällig für den perfekten Platz direkt vor der Tür.', 'Kreisen', 'Parkhaus nehmen', 12, 'Pech-Serien schreiben keine Parkgarantie.'],
+        ['Verlustaversion', 'Du behältst ein zu kleines Kleidungsstück.', 'Es passt nicht, aber Weggeben fühlt sich wie offizielles Scheitern an.', 'Behalten', 'Weitergeben', 45, 'Platz ist auch Wert. Schrank-Museum kostet Übersicht.'],
+        ['Status Quo', 'Dein alter Laptop ist jeden Tag langsam.', 'Du verlierst täglich zehn Minuten und nennst es Charakterbildung.', 'Weiter nutzen', 'Upgrade planen', 300, 'Kleine tägliche Reibung summiert sich heimlich.'],
+        ['Social Proof', 'Ein Finanzvideo hat zwei Millionen Views.', 'Viele Views fühlen sich an wie Wahrheit mit Konfetti.', 'Tipp folgen', 'Quelle prüfen', 200, 'Reichweite ist kein Qualitätszertifikat.'],
+        ['Overconfidence', 'Du willst ein Projekt ohne Puffer planen.', 'Alles dauert bestimmt genau so lange wie in deiner optimistischsten Minute.', 'Eng planen', 'Puffer einbauen', 160, 'Puffer ist keine Schwäche, sondern Respekt vor Realität.'],
+        ['Framing', 'Der Shop sagt: "Spare 30 Euro".', 'Du sparst angeblich, obwohl du gerade 70 Euro ausgibst.', 'Bestellen', 'Nichtkauf rechnen', 70, 'Der größte Rabatt ist manchmal kein Kauf.'],
+        ['Sunk Cost', 'Du hast ein Spiel gekauft und magst es nicht.', 'Noch zehn Stunden spielen, damit der Kauf sich "lohnt", klingt nach Freizeit als Strafarbeit.', 'Durchziehen', 'Deinstallieren', 40, 'Unterhaltung muss nicht gegen den Kassenbon gewinnen.'],
+        ['FOMO', 'Eine Aktie ist heute schon 18 Prozent gestiegen.', 'Du willst nicht der Mensch sein, der "zu spät" war. Das ist kein Investmentplan.', 'Hinterherkaufen', 'Abstand nehmen', 180, 'Steile Bewegung plus Panik ist selten ein ruhiger Einstieg.'],
+        ['Ankereffekt', 'Der erste Gehaltsvorschlag liegt niedrig.', 'Plötzlich wirkt eine kleine Erhöhung großzügig, obwohl dein Marktwert höher ist.', 'Akzeptieren', 'Markt prüfen', 1200, 'Der erste Vorschlag setzt den Rahmen nur, wenn du ihn lässt.'],
+        ['Gambler Fallacy', 'Du hast beim Lernen dreimal die gleiche Aufgabe falsch.', 'Jetzt willst du sie überspringen, weil sie "gegen dich" ist.', 'Skippen', 'Muster suchen', 35, 'Fehler sind Daten. Sie sind nicht persönlich.'],
+        ['Verlustaversion', 'Du vermeidest Bonuspunkte nicht riskieren.', 'Eine gute Chance auf mehr liegt da, aber der kleine mögliche Verlust schreit lauter.', 'Sicher bleiben', 'Chance rechnen', 55, 'Verluste fühlen sich stärker an als gleich große Gewinne. Rechnen hilft.'],
+        ['Status Quo', 'Dein Kalender ist voller alter Gewohnheiten.', 'Keiner fragt, ob sie noch zu deinem Leben passen. Sie stehen einfach da mit Hausrecht.', 'Alles lassen', 'Aufräumen', 100, 'Routinen verdienen gelegentlich eine Prüfung.'],
+        ['Social Proof', 'Dein Team nutzt ein kompliziertes Tool.', 'Alle wirken beschäftigt, also muss es wohl gut sein. Vielleicht ist es nur kompliziert.', 'Mitmachen', 'Nutzen messen', 240, 'Wenn alle leiden, ist das noch kein Prozess.'],
+        ['Overconfidence', 'Du willst ohne Budget in den Urlaub.', 'Du hast ja "ungefähr ein Gefühl". Dein Konto liebt solche Abenteuer nicht.', 'Einfach buchen', 'Budget setzen', 450, 'Ein Gefühl ersetzt keine Summe, besonders nicht unterwegs.'],
+        ['Framing', 'Die Versicherung heißt "Rundum-Sorglos".', 'Der Name klingt wie Schlaflied. Die Bedingungen lesen sich weniger kuschelig.', 'Abschließen', 'Leistung prüfen', 220, 'Produktnamen sind Werbung, keine Analyse.'],
+        ['Sunk Cost', 'Du hast ein Buch halb gelesen und hasst jede Seite.', 'Dein Regal guckt streng, aber deine Lebenszeit ist kein Opferaltar.', 'Fertig lesen', 'Abbrechen', 18, 'Ein abgebrochenes schlechtes Buch macht Platz für ein gutes.'],
+        ['FOMO', 'Eine Einladung klingt exklusiv.', 'Du bist müde, aber "nur ausgewählte Leute" kitzelt dein Ego direkt am Terminkalender.', 'Hingehen', 'Energie checken', 50, 'Exklusiv heißt nicht automatisch wertvoll für dich.'],
+        ['Ankereffekt', 'Beim Autokauf steht ein hoher Listenpreis im Raum.', 'Der Rabatt fühlt sich riesig an, obwohl Nebenkosten und Wartung heimlich winken.', 'Deal nehmen', 'Gesamtkosten prüfen', 900, 'Der Kaufpreis ist nur ein Teil der Wahrheit.'],
+        ['Gambler Fallacy', 'Du glaubst, nach viel Stress muss jetzt ein guter Tag kommen.', 'Schön wärs. Der Kalender würfelt nicht mit Gerechtigkeitssinn.', 'Alles riskieren', 'Ruhig planen', 70, 'Ausgleich ist ein Wunsch, keine Prognose.'],
+        ['Verlustaversion', 'Du möchtest deine alte Idee nicht loslassen.', 'Sie war mal genial. Jetzt blockiert sie neue bessere Optionen.', 'Festhalten', 'Neu denken', 140, 'Eine Idee darf früher gut gewesen sein und heute trotzdem im Weg stehen.'],
+        ['Status Quo', 'Du zahlst Kontogebühren aus Gewohnheit.', 'Die Bank bedankt sich monatlich für deine Trägheit, sehr diskret natürlich.', 'Behalten', 'Konto wechseln', 96, 'Kleine Gebühren sind nur klein, bis sie jahrelang wiederkommen.'],
+        ['Social Proof', 'Alle im Kurs kaufen dasselbe Buch.', 'Du kaufst es, auch wenn du noch drei ungelesene Fachbücher stapelst.', 'Mitkaufen', 'Erst lesen', 32, 'Gruppenenergie kann Einkaufslust als Lernplan verkleiden.'],
+        ['Overconfidence', 'Du willst drei Nebenprojekte gleichzeitig bauen.', 'Dein Montag-Ich verspricht Dinge, die dein Freitag-Ich später ausbaden muss.', 'Alle starten', 'Eins wählen', 210, 'Fokus ist kein Mangel an Ambition, sondern Ambition mit Lenkrad.'],
+        ['Framing', 'Ein Produkt kostet "unter 100 Euro".', 'Es kostet 99,99 Euro. Technisch korrekt, psychologisch frech.', 'Kaufen', 'Aufrunden', 100, 'Schwellenpreise nutzen unsere Sehgewohnheit. Runde innerlich auf.'],
+        ['Sunk Cost', 'Du hast einen schlechten Workshop gebucht.', 'Nach der ersten Stunde ist klar: nichts für dich. Aber der Tag ist bezahlt.', 'Bleiben', 'Gehen und arbeiten', 120, 'Ein bezahlter Tag muss nicht komplett verloren gehen.'],
+        ['FOMO', 'Eine Beta ist nur für die ersten 500 Nutzer offen.', 'Du hast keinen Nutzen, aber eine Warteliste klingt plötzlich wie ein VIP-Bereich.', 'Registrieren', 'Problem prüfen', 25, 'Knappheit macht Dinge begehrlich, nicht automatisch brauchbar.'],
+        ['Ankereffekt', 'Ein Coach nennt 2000 Euro als Normalpreis.', 'Der "Freundschaftspreis" von 799 Euro wirkt plötzlich fast bescheiden.', 'Buchen', 'Ergebnis prüfen', 799, 'Hohe Startpreise können Ersparnis simulieren. Frage nach Wirkung.'],
+        ['Gambler Fallacy', 'Beim Würfeln kam lange keine Sechs.', 'Du spürst die Sechs schon in der Luft. Die Luft hat keine Statistik-Ausbildung.', 'Höher setzen', 'Normal bleiben', 30, 'Seltene Ereignisse werden nicht durch Warten verpflichtet.'],
+        ['Verlustaversion', 'Du vermeidest ein ehrliches Gespräch.', 'Du willst die aktuelle Ruhe nicht verlieren, obwohl das Problem Zinsen nimmt.', 'Schweigen', 'Ansprechen', 100, 'Kurzfristiger Komfort kann langfristig teuer werden.'],
+        ['Status Quo', 'Deine To-do-Liste hat alte Geisteraufgaben.', 'Sie stehen seit Monaten da und machen jeden Morgen kurz schlechte Stimmung.', 'Ignorieren', 'Löschen oder planen', 60, 'Offene Schleifen kosten Aufmerksamkeit, auch ohne Arbeit.'],
+        ['Social Proof', 'Ein Trend-ETF wird überall empfohlen.', 'Du verstehst ihn nicht ganz, aber alle klingen sehr entspannt und reich.', 'Kaufen', 'Factsheet lesen', 300, 'Ein gutes Produkt bleibt gut, nachdem du es verstanden hast.'],
+        ['Overconfidence', 'Du willst beim Umzug alles an einem Tag schaffen.', 'Du unterschätzt Treppen, Kabel, Schrauben und deine spätere Laune.', 'Ein Tag planen', 'Hilfe und Puffer', 180, 'Logistik frisst Optimismus gern zum Frühstück.'],
+        ['Framing', 'Der Shop nennt es "kostenloser Versand ab 80 Euro".', 'Du brauchst Waren für 54 Euro und kaufst 26 Euro Unsinn, um "gratis" zu bekommen.', 'Auffüllen', 'Versand zahlen', 26, 'Gratis ist nicht gratis, wenn du dafür Dinge kaufst, die du nicht brauchst.'],
+        ['Sunk Cost', 'Du hast eine Serie fünf Staffeln verfolgt.', 'Staffel sechs ist zäh, aber du fühlst dich biografisch verpflichtet.', 'Weiterschauen', 'Aussteigen', 35, 'Lange Begleitung ist kein Vertrag bis zum bitteren Ende.'],
+        ['FOMO', 'Ein Workshop hat nur noch einen Platz.', 'Der Platz ist real knapp. Deine Zeit nächste Woche auch.', 'Buchen', 'Kalender prüfen', 180, 'Knappheit beim Anbieter löst kein Kapazitätsproblem bei dir.'],
+        ['Ankereffekt', 'Der erste Wohnungspreis setzt dein Gefühl.', 'Alles darunter wirkt billig, obwohl die Lage und Nebenkosten noch nicht gerechnet sind.', 'Zusagen', 'Vergleichen', 500, 'Vergleich braucht mehrere Datenpunkte, nicht nur den ersten Schock.'],
+        ['Gambler Fallacy', 'Du hast drei produktive Tage.', 'Jetzt glaubst du, heute darf komplett eskalieren, weil du "vorgearbeitet" hast.', 'Alles schieben', 'Minimum machen', 45, 'Gute Serien sind wertvoll, aber kein Freifahrtschein für Chaos.'],
+        ['Verlustaversion', 'Du möchtest einen Fehlkauf behalten, falls du ihn "irgendwann" brauchst.', 'Irgendwann ist ein sehr teures Lagerargument.', 'Einlagern', 'Verkaufen', 65, 'Besitz kostet Platz, Pflege und Aufmerksamkeit.'],
+        ['Status Quo', 'Dein Browser hat 47 offene Tabs.', 'Jeder Tab behauptet, später wichtig zu werden. Keiner übernimmt Verantwortung.', 'Offen lassen', 'Sortieren', 40, 'Digitales Durcheinander ist auch Durcheinander.'],
+        ['Social Proof', 'Ein Newsletter wird von "Top-Leuten" gelesen.', 'Du abonnierst ihn, obwohl dein Postfach schon eine kleine Papierlawine simuliert.', 'Abonnieren', 'Erst entmüllen', 36, 'Prestige-Leser machen keinen freien Kopf.'],
+        ['Overconfidence', 'Du willst eine Prüfung nur mit Zusammenfassung lernen.', 'Die Zusammenfassung wirkt so sauber, dass dein Gehirn sie mit Können verwechselt.', 'Nur lesen', 'Aktiv abfragen', 120, 'Wiedererkennen ist nicht Erinnern. Teste dich aktiv.'],
+        ['Framing', 'Ein Kauf wird als "Investition in dich" verkauft.', 'Manchmal stimmt das. Manchmal ist es nur ein teures Notizbuch mit Motivationstext.', 'Kaufen', 'Nutzen definieren', 85, 'Nicht alles, was nach Wachstum klingt, erzeugt Wachstum.'],
+        ['Sunk Cost', 'Du hast einen Plan öffentlich angekündigt.', 'Jetzt merkst du, er ist schlecht. Aber Zurückrudern kratzt am Image.', 'Durchziehen', 'Korrigieren', 200, 'Kurskorrektur ist kein Versagen, sondern bessere Navigation.'],
+        ['FOMO', 'Deine Freunde buchen spontan eine teure Reise.', 'Du willst dabei sein, obwohl dein Budget bereits auf dem Sofa liegt und schwer atmet.', 'Mitbuchen', 'Alternative vorschlagen', 650, 'Gemeinschaft ist wichtig. Finanzstress danach auch.'],
+        ['Ankereffekt', 'Eine App zeigt den Premiumpreis zuerst.', 'Danach wirkt das mittlere Paket vernünftig, obwohl du die Gratisversion kaum kennst.', 'Premium nehmen', 'Gratis testen', 120, 'Preisstaffeln lenken dich gern zur Mitte. Teste erst den Bedarf.'],
+        ['Gambler Fallacy', 'Du hattest heute nur Absagen.', 'Jetzt klingt die nächste riskante Mail plötzlich wie der Ausgleich des Universums.', 'Hastig senden', 'Sauber formulieren', 40, 'Ein schlechter Lauf ersetzt keine Qualitätssicherung.'],
+        ['Verlustaversion', 'Du vermeidest keinen Urlaub, um nichts zu verpassen.', 'Dein Kopf sammelt Erschöpfung wie Rabattmarken ohne Prämie.', 'Durcharbeiten', 'Pause planen', 300, 'Erholung ist kein Verlust von Produktivität, sondern Wartung.'],
+        ['Status Quo', 'Du nutzt eine Lernmethode, die nicht funktioniert.', 'Sie ist vertraut, also bekommt sie jedes Mal noch eine letzte Chance.', 'Weiter so', 'Methode wechseln', 90, 'Vertraut ist nicht gleich wirksam.'],
+        ['Social Proof', 'Alle im Feed zeigen Morgenroutinen.', 'Du kaufst Zubehör, bevor du einmal um sieben Uhr aufgestanden bist.', 'Setup kaufen', 'Eine Woche testen', 70, 'Routine entsteht durch Wiederholung, nicht durch Ausrüstung.'],
+        ['Overconfidence', 'Du willst ohne Recherche ein gebrauchtes Gerät kaufen.', 'Der Preis wirkt gut und der Verkäufer klingt nett. Das ist dünnes Eis mit freundlichem Ton.', 'Direkt zahlen', 'Checkliste nutzen', 220, 'Vertrauen ist gut, Seriennummer und Zustand sind besser.'],
+        ['Framing', 'Die Rate ist "bequem".', 'Bequem heißt oft: länger zahlen, mehr Zinsen, weniger Überblick.', 'Finanzieren', 'Barpreis prüfen', 380, 'Bequemlichkeit beim Bezahlen kann teuer eingepreist sein.'],
+        ['Sunk Cost', 'Du hast viel in ein Hobby investiert, das dir keinen Spaß mehr macht.', 'Die Ausrüstung schaut dich an wie ein sehr teures Argument.', 'Weitermachen', 'Verkaufen', 260, 'Ausrüstung verpflichtet dich nicht zu alter Begeisterung.'],
+        ['FOMO', 'Ein Technikdeal endet um Mitternacht.', 'Du liest Tests nicht, weil der Timer schon nervös mit den Schultern zuckt.', 'Kaufen', 'Morgen prüfen', 240, 'Ein guter Kauf wird durch eine Nacht Schlaf selten schlechter.'],
+        ['Ankereffekt', 'Ein Restaurant empfiehlt zuerst das teuerste Menü.', 'Plötzlich wirkt das zweit-teuerste Menü wie Vernunft mit Besteck.', 'Zweit-teuer nehmen', 'Hunger prüfen', 45, 'Reihenfolge kann Geschmack simulieren.'],
+        ['Gambler Fallacy', 'Du hast lange nichts gewonnen.', 'Der Gewinn fühlt sich näher an, weil die Enttäuschung schon so viel Strecke gemacht hat.', 'Noch eine Runde', 'Budget stoppen', 25, 'Gefühlte Nähe ist keine Wahrscheinlichkeit.'],
+        ['Verlustaversion', 'Du verkaufst Gewinner zu früh.', 'Der kleine sichere Gewinn fühlt warm an, während gute Gründe zum Halten noch arbeiten.', 'Sofort verkaufen', 'These prüfen', 190, 'Gewinn sichern kann sinnvoll sein, aber Angst ist keine Strategie.'],
+        ['Status Quo', 'Dein Handy ist voller Apps, die dich ablenken.', 'Du weißt es. Sie wissen es auch. Alle tun überrascht.', 'Alles lassen', 'Benachrichtigungen aus', 75, 'Standardeinstellungen dienen oft der App, nicht deinem Fokus.'],
+        ['Social Proof', 'Eine Challenge hat zehntausende Teilnehmer.', 'Du meldest dich an, weil Masse nach Motivation klingt.', 'Mitmachen', 'Ziel prüfen', 55, 'Viele Teilnehmer machen dein Ziel nicht automatisch klarer.'],
+        ['Overconfidence', 'Du willst eine Aufgabe "kurz vor Abgabe" erledigen.', 'Dein Zukunfts-Ich wird angeblich ruhig, konzentriert und ohne WLAN-Probleme sein.', 'Später machen', 'Jetzt anfangen', 110, 'Zukunfts-Ich ist oft beschäftigt mit den Folgen von Heute-Ich.'],
+        ['Framing', 'Das Angebot sagt "zahle erst in 30 Tagen".', 'Heute fühlt es sich kostenlos an. In 30 Tagen heißt es dann Überraschung mit IBAN.', 'Später zahlen', 'Jetzt budgetieren', 95, 'Aufgeschobene Zahlung ist keine gesparte Zahlung.'],
+        ['Sunk Cost', 'Du hast eine komplizierte Lösung gebaut.', 'Sie funktioniert halb, aber Wegwerfen fühlt sich an wie Verrat an deinem Genie.', 'Weiter flicken', 'Einfacher bauen', 170, 'Komplexität verdient nur dann Schutz, wenn sie echten Nutzen bringt.'],
+        ['FOMO', 'Ein Event klingt nach Karriere-Booster.', 'Du hast keine klare Frage, aber Angst, dass dort die magische Tür steht.', 'Ticket kaufen', 'Ziel setzen', 210, 'Netzwerken ohne Ziel ist oft teures Herumstehen.'],
+        ['Ankereffekt', 'Beim Verhandeln nennst du zuerst einen zu niedrigen Preis.', 'Jetzt klebt die Zahl im Raum und alle tun so, als wäre sie Naturgesetz.', 'Dabei bleiben', 'Neu begründen', 300, 'Eigene Anker können dich genauso fangen wie fremde.'],
+        ['Gambler Fallacy', 'Du hast drei gute Trades gemacht.', 'Jetzt fühlst du dich unbesiegbar, als hätte Zufall gerade einen Arbeitsvertrag unterschrieben.', 'Größer setzen', 'Positionsgröße halten', 260, 'Eine Gewinnserie beweist keine Unfehlbarkeit.'],
+        ['Verlustaversion', 'Du vermeidest Feedback, um dich nicht schlecht zu fühlen.', 'Kurz bleibt dein Ego trocken. Langfristig bleibt der Fehler im System.', 'Nicht fragen', 'Feedback holen', 130, 'Unangenehme Information kann teuer verhindern, dass du teuer scheiterst.'],
+        ['Status Quo', 'Du zahlst für Cloudspeicher voller alter Dateien.', 'Nichts davon brauchst du, aber Aufräumen klingt nach innerer Steuererklärung.', 'Weiterzahlen', 'Archivieren', 72, 'Speicherplatz ist billig, aber Dauerzahlungen sind sehr geduldig.'],
+        ['Social Proof', 'Alle schwärmen von einem Produktivitätsbuch.', 'Du kaufst es, statt die eine bekannte Aufgabe endlich zu machen.', 'Buch kaufen', 'Aufgabe starten', 24, 'Noch mehr Input kann Umsetzung elegant verzögern.'],
+        ['Overconfidence', 'Du willst ohne Schlaf eine schwere Entscheidung treffen.', 'Dein Gehirn läuft auf Notstrom und nennt das Intuition.', 'Entscheiden', 'Schlafen', 400, 'Müdigkeit verkleidet schlechte Urteile als Dringlichkeit.'],
+        ['Framing', 'Ein Tarif heißt "Unlimited".', 'Klingt grenzenlos, bis Drosselung und Fair-Use-Regeln die Party beenden.', 'Buchen', 'Details lesen', 180, 'Große Wörter brauchen kleine Fußnoten-Kontrolle.'],
+        ['Sunk Cost', 'Du bist in einer schlechten Diskussion gefangen.', 'Du hast schon so viel argumentiert, jetzt willst du wenigstens Recht als Trostpreis.', 'Weiterstreiten', 'Aussteigen', 50, 'Nicht jede investierte Minute verdient eine weitere Minute.']
+    ];
+
+    const scenarios = scenarioRows.map(([bias, title, text, trap, smart, value, lesson]) => ({
+        bias,
+        title,
+        text,
+        trap,
+        smart,
+        value,
+        lesson
+    }));
+
+    const tiles = ['Sunk Cost', 'FOMO', 'Ankereffekt', 'Gambler Fallacy', 'Verlustaversion', 'Status Quo', 'Social Proof', 'Overconfidence', 'Framing'];
+    const pointsDisplay = document.getElementById('points');
+    const roundDisplay = document.getElementById('round');
+    const savedDisplay = document.getElementById('saved');
+    const damageDisplay = document.getElementById('damage');
+    const biasTag = document.getElementById('biasTag');
+    const titleDisplay = document.getElementById('title');
+    const textDisplay = document.getElementById('text');
+    const trapBtn = document.getElementById('trapBtn');
+    const smartBtn = document.getElementById('smartBtn');
+    const explainDisplay = document.getElementById('explain');
+    const bingoDisplay = document.getElementById('bingo');
+    const logDisplay = document.getElementById('log');
+
+    // New stats indicators
+    const highscoreStatDisplay = document.getElementById('highscoreStat');
+    const totalDecisionsStatDisplay = document.getElementById('totalDecisionsStat');
+
+    let deck = [];
+    let current = null;
+    let round = 1;
+    let points = 0;
+    let saved = 0;
+    let damage = 0;
+    let hitBiases = new Set();
+    let locked = false;
+
+    // Decisions count tracker
+    let totalDecisions = localStorage.getItem('biasBingoTotalDecisions') ? parseInt(localStorage.getItem('biasBingoTotalDecisions')) : 0;
+
+    function euro(value) {
+        return value.toLocaleString('de-DE', { maximumFractionDigits: 0 }) + ' €';
+    }
+
+    // Fisher-Yates Shuffle
+    function shuffle(items) {
+        const arr = [...items];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+        return arr;
+    }
+
+    function renderBingo() {
+        bingoDisplay.innerHTML = '';
+        tiles.forEach(tile => {
+            const div = document.createElement('div');
+            div.className = hitBiases.has(tile) ? 'tile hit' : 'tile';
+            div.textContent = tile;
+            bingoDisplay.append(div);
+        });
+    }
+
+    function addLog(text) {
+        const line = document.createElement('div');
+        line.textContent = text;
+        logDisplay.prepend(line);
+    }
+
+    function updateStats() {
+        pointsDisplay.textContent = points;
+        roundDisplay.textContent = `${Math.min(round, 10)} / 10`;
+        savedDisplay.textContent = euro(saved);
+        damageDisplay.textContent = euro(damage);
+
+        const highscore = Number(localStorage.getItem('biasBingoHighscore') || 0);
+        if (highscoreStatDisplay) highscoreStatDisplay.textContent = highscore;
+        if (totalDecisionsStatDisplay) totalDecisionsStatDisplay.textContent = totalDecisions;
+    }
+
+    function saveState() {
+        localStorage.setItem('biasBingoState', JSON.stringify({
+            deck,
+            current,
+            round,
+            points,
+            saved,
+            damage,
+            hitBiases: [...hitBiases],
+            locked,
+            log: logDisplay.innerHTML,
+            explain: explainDisplay.textContent,
+            title: titleDisplay.textContent,
+            text: textDisplay.textContent,
+            bias: biasTag.textContent,
+            trap: trapBtn.textContent,
+            smart: smartBtn.textContent
+        }));
+    }
+
+    function loadState() {
+        const rawState = localStorage.getItem('biasBingoState');
+        if (!rawState) return false;
+
+        try {
+            const state = JSON.parse(rawState);
+            deck = Array.isArray(state.deck) ? state.deck : [];
+            current = state.current || null;
+            round = state.round || 1;
+            points = state.points || 0;
+            saved = state.saved || 0;
+            damage = state.damage || 0;
+            hitBiases = new Set(Array.isArray(state.hitBiases) ? state.hitBiases : []);
+            locked = Boolean(state.locked);
+            logDisplay.innerHTML = state.log || '';
+            explainDisplay.textContent = state.explain || 'Wähle eine Seite. Danach sagt dir das Spiel, welcher Denkfehler gerade versucht hat, am Steuer zu sitzen.';
+            biasTag.textContent = state.bias || current?.bias || 'Bias';
+            titleDisplay.textContent = state.title || current?.title || 'Lade Angebot...';
+            textDisplay.textContent = state.text || current?.text || '';
+            trapBtn.textContent = state.trap || current?.trap || 'Rein da';
+            smartBtn.textContent = state.smart || current?.smart || 'Kurz denken';
+            renderBingo();
+            updateStats();
+            return true;
+        } catch (error) {
+            localStorage.removeItem('biasBingoState');
+            return false;
+        }
+    }
+
+    function nextScenario() {
+        if (round > 10) {
+            finishRun();
+            return;
+        }
+
+        if (deck.length === 0) deck = shuffle(scenarios);
+        current = deck.pop();
+        locked = false;
+        biasTag.textContent = current.bias;
+        titleDisplay.textContent = current.title;
+        textDisplay.textContent = current.text;
+        trapBtn.textContent = current.trap;
+        smartBtn.textContent = current.smart;
+        explainDisplay.textContent = 'Wähle eine Seite. Bonuspunkte gibt es fürs Denken, nicht fürs besonders dramatische Klicken.';
+        updateStats();
+        saveState();
+    }
+
+    function chooseSmart() {
+        if (locked) return;
+        locked = true;
+        points += 10;
+        saved += current.value;
+        hitBiases.add(current.bias);
+        explainDisplay.textContent = current.lesson;
+        addLog(`+10: ${current.bias} erkannt, ${euro(current.value)} gerettet.`);
+        
+        totalDecisions++;
+        localStorage.setItem('biasBingoTotalDecisions', totalDecisions);
+
+        renderBingo();
+        round++;
+        saveState();
+        window.setTimeout(nextScenario, 1400);
+    }
+
+    function chooseTrap() {
+        if (locked) return;
+        locked = true;
+        points = Math.max(0, points - 4);
+        damage += current.value;
+        explainDisplay.textContent = `Autsch. ${current.lesson}`;
+        addLog(`-4: ${current.bias} hat dich erwischt, Schaden ${euro(current.value)}.`);
+        
+        totalDecisions++;
+        localStorage.setItem('biasBingoTotalDecisions', totalDecisions);
+
+        round++;
+        saveState();
+        window.setTimeout(nextScenario, 1500);
+    }
+
+    function finishRun() {
+        const highscore = Number(localStorage.getItem('biasBingoHighscore') || 0);
+        if (points > highscore) {
+            localStorage.setItem('biasBingoHighscore', String(points));
+        }
+
+        biasTag.textContent = 'Auswertung';
+        titleDisplay.textContent = points >= 70 ? 'Dein Gehirn hat heute Dienst.' : 'Da ist noch Hype im System.';
+        textDisplay.textContent = `Score ${points}. Gerettet: ${euro(saved)}. Schaden: ${euro(damage)}. Highscore: ${Math.max(points, highscore)}.`;
+        explainDisplay.textContent = hitBiases.size >= 6
+            ? 'Stark. Du hast mehrere Denkfallen wirklich gesehen, nicht nur weggeklickt.'
+            : 'Nochmal spielen lohnt sich. Biases erkennt man schneller, wenn man sie ein paarmal beim Tricksen erwischt.';
+        locked = true;
+        updateStats();
+        saveState();
+    }
+
+    function newRun() {
+        deck = shuffle(scenarios);
+        current = null;
+        round = 1;
+        points = 0;
+        saved = 0;
+        damage = 0;
+        hitBiases = new Set();
+        locked = false;
+        logDisplay.innerHTML = '';
+        renderBingo();
+        nextScenario();
+        saveState();
+    }
+
+    trapBtn.addEventListener('click', chooseTrap);
+    smartBtn.addEventListener('click', chooseSmart);
+    document.getElementById('newRunBtn').addEventListener('click', newRun);
+    document.getElementById('resetBtn').addEventListener('click', () => {
+        localStorage.removeItem('biasBingoHighscore');
+        localStorage.removeItem('biasBingoState');
+        totalDecisions = 0;
+        localStorage.removeItem('biasBingoTotalDecisions');
+        addLog('Highscore gelöscht.');
+        saveState();
+    });
+
+    renderBingo();
+    if (!loadState()) {
+        newRun();
+    }
+
+    document.addEventListener('contextmenu', event => {
+        if (event.target.closest('button, a, [role="button"]')) {
+            event.preventDefault();
+        }
+    });
+</script>
+<script>
+document.addEventListener('click',event=>{if(!document.body.classList.contains('bb-hyper-clicks-on'))return;const target=event.target.closest('button,a,[role="button"]');if(!target)return;target.classList.remove('dopamine-hit');void target.offsetWidth;target.classList.add('dopamine-hit');const ring=document.createElement('span');ring.className='dopamine-burst';ring.style.left=event.clientX+'px';ring.style.top=event.clientY+'px';document.body.append(ring);setTimeout(()=>ring.remove(),620);for(let i=0;i<12;i++){const spark=document.createElement('span');spark.className='dopamine-spark';spark.style.left=event.clientX+'px';spark.style.top=event.clientY+'px';spark.style.background=i%3===0?'#2dd4bf':i%3===1?'#e5a93b':'#26de81';const angle=Math.random()*Math.PI*2,dist=32+Math.random()*42;spark.style.setProperty('--x',Math.cos(angle)*dist+'px');spark.style.setProperty('--y',Math.sin(angle)*dist+'px');document.body.append(spark);setTimeout(()=>spark.remove(),650)}});
+</script>
+<script id="bb-touch-zoom-guard">
+(function() {
+    if (window.__bbTouchZoomGuard) return;
+    window.__bbTouchZoomGuard = true;
+
+    let lastTouchEnd = 0;
+    const interactiveSelector = 'button, a, input, select, textarea, label, [role="button"], .progress-bar-container, .card, .chart';
+
+    document.addEventListener('touchend', function(event) {
+        const now = Date.now();
+        const isInteractive = event.target.closest && event.target.closest(interactiveSelector);
+
+        if (!isInteractive && now - lastTouchEnd <= 350 && event.cancelable) {
+            event.preventDefault();
+        }
+
+        lastTouchEnd = now;
+    }, { passive: false });
+
+    document.addEventListener('dblclick', function(event) {
+        if (event.cancelable) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach(function(eventName) {
+        document.addEventListener(eventName, function(event) {
+            if (event.cancelable) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+    });
+})();
+</script>
+<script id="bb-hyper-script">
+(function(){
+  if(window.__bbHyperController)return;
+  window.__bbHyperController=true;
+  const key='bbHyper:games';
+  const gear=document.getElementById('bbHyperToggle');
+  const panel=document.getElementById('bbHyperPanel');
+  const title=document.getElementById('bbHyperTitle');
+  const mode=document.getElementById('bbHyperMode');
+  const clicks=document.getElementById('bbHyperClicks');
+  const ambient=document.getElementById('bbHyperAmbient');
+  if(!gear||!panel||!mode||!clicks||!ambient)return;
+  title.textContent=(document.title||'BlopperBold')+' Einstellungen';
+  let closeTimer=0;
+  let state;
+  try{state=JSON.parse(localStorage.getItem(key)||'null')}catch(error){state=null}
+  if(!state)state={mode:true,clicks:true,ambient:true};
+  function save(){localStorage.setItem(key,JSON.stringify(state))}
+  function toast(text){if(!state.mode)return;const el=document.createElement('div');el.className='bb-hyper-toast';el.textContent=text;document.body.append(el);setTimeout(()=>el.remove(),950)}
+  function apply(){document.body.classList.toggle('bb-hyper-on',!!state.mode);document.body.classList.toggle('bb-hyper-clicks-on',!!state.mode&&!!state.clicks);gear.classList.toggle('is-on',!!state.mode);mode.checked=!!state.mode;clicks.checked=!!state.clicks;ambient.checked=!!state.ambient;save()}
+  function openPanel(){clearTimeout(closeTimer);panel.classList.remove('closing');panel.classList.add('show');panel.setAttribute('aria-hidden','false');gear.setAttribute('aria-expanded','true')}
+  function closePanel(){if(!panel.classList.contains('show'))return;clearTimeout(closeTimer);panel.classList.remove('show');panel.classList.add('closing');panel.setAttribute('aria-hidden','true');gear.setAttribute('aria-expanded','false');closeTimer=setTimeout(()=>panel.classList.remove('closing'),220)}
+  function burst(x,y,amount){if(!state.mode||!state.clicks)return;const colors=['#e5a93b','#2dd4bf','#26de81','#fb7185','#a78bfa','#fff'];for(let i=0;i<amount;i++){const s=document.createElement('span');s.className='bb-hyper-spark';s.style.left=x+'px';s.style.top=y+'px';s.style.setProperty('--bb-c',colors[i%colors.length]);const angle=Math.random()*Math.PI*2;const dist=38+Math.random()*96;s.style.setProperty('--bb-x',Math.cos(angle)*dist+'px');s.style.setProperty('--bb-y',Math.sin(angle)*dist+'px');document.body.append(s);setTimeout(()=>s.remove(),950)}}
+  gear.addEventListener('click',event=>{event.stopPropagation();panel.classList.contains('show')?closePanel():openPanel();burst(event.clientX,event.clientY,18)});
+  panel.addEventListener('click',event=>event.stopPropagation());
+  document.addEventListener('click',event=>{if(!panel.contains(event.target)&&event.target!==gear)closePanel()});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape')closePanel()});
+  mode.addEventListener('change',()=>{state.mode=mode.checked;apply();toast(state.mode?'Hypermodus an':'Hypermodus aus')});
+  clicks.addEventListener('change',()=>{state.clicks=clicks.checked;apply();toast(state.clicks?'Klicks glitzern':'Klicks ruhig')});
+  ambient.addEventListener('change',()=>{state.ambient=ambient.checked;apply();toast(state.ambient?'Glitzerregen an':'Glitzerregen aus')});
+  document.addEventListener('click',event=>{const target=event.target.closest('button,a,[role="button"],.progress-bar-container,.card,.chart');if(!target||target.closest('.bb-hyper-panel'))return;burst(event.clientX,event.clientY,target.id==='bbHyperToggle'?18:26)});
+  setInterval(()=>{if(!state.mode||!state.ambient||document.hidden)return;const star=document.createElement('span');star.className='bb-hyper-star';star.style.left=Math.random()*100+'vw';star.style.top='-12px';star.style.setProperty('--bb-x',(Math.random()*90-45)+'px');document.body.append(star);setTimeout(()=>star.remove(),2100)},180);
+  apply();
+})();
+</script>
+<script src="../tutorial.js" defer></script>
+</body>
+</html>

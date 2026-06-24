@@ -1,0 +1,2196 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="BlopperBold Labs - Deine Kommandozentrale für Experimente, Rechner und Web-Apps. Spiele, Portfolio-Rechner und mehr.">
+    <title>BlopperBold · Startseite</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link rel="icon" type="image/x-icon" href="images/favicon.png">
+    <link rel="icon" type="image/x-icon" href="/images/favicon.png">
+    <script src="consent.js"></script>
+    <style>
+        :root {
+            --bg-1: #0b0f19;
+            --bg-2: #072a3a;
+            --bg-3: #043e4f;
+            --glass: rgba(255, 255, 255, 0.08);
+            --glass-strong: rgba(255, 255, 255, 0.15);
+            --border: rgba(255, 255, 255, 0.14);
+            --text: #ffffff;
+            --muted: rgba(204, 251, 241, 0.65);
+            --accent: #e5a93b;
+            --accent-2: #2dd4bf;
+            --soft-blue-text: rgba(204, 251, 241, 0.86);
+            --shadow: rgba(0, 0, 0, 0.4);
+            --pink: #f43f5e;
+            --violet: #0ea5e9;
+            --green: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            touch-action: manipulation;
+        }
+
+        button,
+        a,
+        [role="button"] {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 38px 18px 92px;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 12% 18%, rgba(45, 212, 191, 0.3), transparent 28%),
+                radial-gradient(circle at 88% 14%, rgba(229, 169, 59, 0.22), transparent 24%),
+                radial-gradient(circle at 78% 70%, rgba(244, 63, 94, 0.16), transparent 26%),
+                radial-gradient(circle at 50% 100%, rgba(14, 165, 233, 0.25), transparent 33%),
+                linear-gradient(135deg, var(--bg-1), var(--bg-2) 48%, var(--bg-3));
+            background-size: 140% 140%;
+            animation: backgroundDrift 16s ease-in-out infinite alternate;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            text-align: center;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            inset: auto;
+            width: 360px;
+            height: 360px;
+            border-radius: 999px;
+            pointer-events: none;
+            filter: blur(10px);
+            opacity: 0.36;
+            z-index: 0;
+            animation: floatOrb 11s ease-in-out infinite alternate;
+        }
+
+        body::before {
+            top: -90px;
+            left: -110px;
+            background: radial-gradient(circle, rgba(45, 212, 191, 0.4), transparent 68%);
+        }
+
+        body::after {
+            right: -120px;
+            bottom: -110px;
+            background: radial-gradient(circle, rgba(229, 169, 59, 0.3), transparent 68%);
+            animation-duration: 14s;
+        }
+
+        .noise-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.13;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+            background-size: 46px 46px;
+            mask-image: radial-gradient(circle at center, black, transparent 78%);
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: min(1120px, 100%);
+            padding: 34px;
+            border-radius: 30px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.07));
+            border: 1px solid var(--border);
+            box-shadow: 0 30px 90px var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(18px);
+            overflow: hidden;
+            animation: pageEnter 0.72s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .container::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.16), transparent),
+                radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.14), transparent 32%);
+            transform: translateX(-55%);
+            animation: shine 7s ease-in-out infinite;
+        }
+
+        .container::after {
+            content: "";
+            position: absolute;
+            inset: 1px;
+            border-radius: 29px;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 14% 18%, rgba(56, 189, 248, 0.16), transparent 28%),
+                radial-gradient(circle at 88% 78%, rgba(251, 197, 49, 0.12), transparent 30%);
+            opacity: 0.86;
+        }
+
+        .hero {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            gap: 24px;
+        }
+
+        .hero > * {
+            animation: heroItemEnter 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        }
+
+        .hero > *:nth-child(1) { animation-delay: 0.04s; }
+        .hero > *:nth-child(2) { animation-delay: 0.11s; }
+        .hero > *:nth-child(3) { animation-delay: 0.18s; }
+        .hero > *:nth-child(4) { animation-delay: 0.25s; }
+        .hero > *:nth-child(5) { animation-delay: 0.32s; }
+
+        .eyebrow-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 9px 13px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.13);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: rgba(255, 255, 255, 0.84);
+            font-size: 0.84rem;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+        }
+
+        .pill.hot {
+            color: #1f2937;
+            background: linear-gradient(135deg, #fde68a, #fbbf24);
+            box-shadow: 0 10px 30px rgba(251, 197, 49, 0.24), 0 0 34px rgba(251, 197, 49, 0.18);
+        }
+
+        #adminMobileTrigger {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            cursor: default;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(2.35rem, 7vw, 5.35rem);
+            line-height: 0.93;
+            letter-spacing: -0.075em;
+            text-shadow: 0 18px 54px rgba(0, 0, 0, 0.38), 0 0 48px rgba(186, 230, 253, 0.12);
+        }
+
+        .gradient-text {
+            display: inline-block;
+            background: linear-gradient(90deg, #ffffff, #2dd4bf, #e5a93b, #ffffff);
+            background-size: 220% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: textGlow 5.5s ease-in-out infinite alternate;
+        }
+
+        .subtitle {
+            width: min(720px, 100%);
+            margin: 0 auto;
+            color: var(--soft-blue-text);
+            font-size: clamp(1rem, 2.4vw, 1.28rem);
+            line-height: 1.65;
+        }
+
+        .links {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 6px;
+        }
+
+        .app-card {
+            position: relative;
+            isolation: isolate;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-height: 128px;
+            padding: 20px;
+            text-align: left;
+            color: white;
+            text-decoration: none;
+            border-radius: 24px;
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.07)),
+                rgba(255, 255, 255, 0.105);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 18px 44px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transition: transform 0.24s ease, border-color 0.24s ease, background 0.24s ease, box-shadow 0.24s ease, filter 0.24s ease;
+        }
+
+        .app-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.2), transparent 34%);
+            opacity: 0;
+            transition: opacity 0.24s ease;
+        }
+
+        .app-card::after {
+            content: "";
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            bottom: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+            opacity: 0.34;
+        }
+
+        .app-card:hover {
+            transform: translateY(-8px) scale(1.014);
+            filter: saturate(1.08);
+            border-color: rgba(255, 255, 255, 0.32);
+            background: rgba(255, 255, 255, 0.16);
+            box-shadow: 0 28px 70px rgba(0, 0, 0, 0.28);
+        }
+
+        .app-card:hover::before {
+            opacity: 1;
+        }
+
+        .app-card:active {
+            transform: translateY(-2px) scale(0.995);
+        }
+
+        .app-card.version-hold-active {
+            border-color: rgba(251, 197, 49, 0.58);
+            box-shadow: 0 28px 70px rgba(251, 197, 49, 0.18), 0 0 0 1px rgba(251, 197, 49, 0.24);
+        }
+
+        #portfolioLink {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .card-icon {
+            flex: 0 0 auto;
+            width: 58px;
+            height: 58px;
+            border-radius: 19px;
+            display: grid;
+            place-items: center;
+            font-size: 1.8rem;
+            background:
+                radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.34), transparent 32%),
+                rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+        }
+
+        .app-card:hover .card-icon {
+            animation: iconPop 0.58s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .card-content {
+            min-width: 0;
+        }
+
+        .card-title {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 1.14rem;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+        }
+
+        .card-desc {
+            display: block;
+            color: var(--soft-blue-text);
+            font-size: 0.94rem;
+            line-height: 1.42;
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            overflow: hidden;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: rgba(251, 197, 49, 0.18);
+            color: #fde68a;
+            border: 1px solid rgba(251, 197, 49, 0.22);
+            font-size: 0.72rem;
+            font-weight: 900;
+        }
+
+        .card-badge::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: rgba(251, 197, 49, 0.28);
+            transform: scaleX(0);
+            transform-origin: left center;
+        }
+
+        .app-card.version-hold-active .card-badge::before {
+            animation: versionHoldFill 0.62s linear forwards;
+        }
+
+        .more-games-trigger {
+            position: relative;
+            isolation: isolate;
+            grid-column: 1 / -1;
+            min-height: 72px;
+            border: 1px solid rgba(251, 197, 49, 0.26);
+            border-radius: 22px;
+            background:
+                radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.18), transparent 34%),
+                linear-gradient(135deg, rgba(251, 197, 49, 0.24), rgba(56, 189, 248, 0.16)),
+                rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 950;
+            box-shadow: 0 18px 44px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transition: transform 0.24s ease, border-color 0.24s ease, box-shadow 0.24s ease, filter 0.24s ease;
+        }
+
+        .more-games-trigger::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-120%) skewX(-10deg);
+            transition: transform 0.48s ease;
+        }
+
+        .more-games-trigger:hover {
+            transform: translateY(-6px) scale(1.01);
+            filter: saturate(1.08);
+            border-color: rgba(251, 197, 49, 0.44);
+            box-shadow: 0 28px 70px rgba(0, 0, 0, 0.28), 0 0 34px rgba(251, 197, 49, 0.14);
+        }
+
+        .more-games-trigger:hover::before {
+            transform: translateX(120%) skewX(-10deg);
+        }
+
+        .more-games-trigger span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.08rem;
+        }
+
+        .more-games-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            display: grid;
+            place-items: center;
+            padding: 18px;
+            background: rgba(15, 23, 42, 0.42);
+            opacity: 0;
+            pointer-events: none;
+            backdrop-filter: blur(0);
+            transition: opacity 0.2s ease, backdrop-filter 0.28s ease;
+        }
+
+        .more-games-backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+            backdrop-filter: blur(14px);
+        }
+
+        .more-games-widget {
+            width: min(760px, 100%);
+            max-height: min(720px, calc(100vh - 36px));
+            overflow: auto;
+            padding: clamp(20px, 5vw, 30px);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background:
+                radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.2), transparent 34%),
+                radial-gradient(circle at 86% 18%, rgba(251, 197, 49, 0.16), transparent 30%),
+                rgba(15, 23, 42, 0.88);
+            box-shadow: 0 32px 110px rgba(0, 0, 0, 0.48);
+            transform: scale(0.88) translateY(20px);
+            filter: blur(10px);
+            transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.28s ease;
+        }
+
+        .more-games-backdrop.show .more-games-widget {
+            transform: scale(1) translateY(0);
+            filter: blur(0);
+        }
+
+        .more-games-header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: start;
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .more-games-kicker {
+            display: inline-flex;
+            width: fit-content;
+            margin-bottom: 10px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(251, 197, 49, 0.18);
+            color: #fde68a;
+            border: 1px solid rgba(251, 197, 49, 0.22);
+            font-size: 0.72rem;
+            font-weight: 950;
+            text-transform: uppercase;
+        }
+
+        .more-games-title {
+            margin: 0;
+            color: white;
+            font-size: clamp(1.9rem, 6vw, 3.4rem);
+            line-height: 0.94;
+            letter-spacing: -0.04em;
+        }
+
+        .more-games-copy {
+            margin: 12px 0 0;
+            color: var(--soft-blue-text);
+            line-height: 1.55;
+        }
+
+        .more-games-close {
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            font: inherit;
+            font-size: 1.5rem;
+            font-weight: 900;
+        }
+
+        .more-games-close:hover,
+        .more-games-close:focus-visible {
+            outline: none;
+            background: rgba(255, 255, 255, 0.16);
+        }
+
+        .more-games-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .more-games-grid .app-card {
+            min-height: 150px;
+        }
+
+        .ye-soundboard-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 25;
+            display: grid;
+            place-items: center;
+            padding: 18px;
+            background: rgba(15, 23, 42, 0.42);
+            opacity: 0;
+            pointer-events: none;
+            backdrop-filter: blur(0);
+            transition: opacity 0.2s ease, backdrop-filter 0.28s ease;
+        }
+
+        .ye-soundboard-backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+            backdrop-filter: blur(14px);
+        }
+
+        .ye-soundboard-widget {
+            width: min(560px, 100%);
+            padding: clamp(20px, 5vw, 30px);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background:
+                radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.2), transparent 34%),
+                radial-gradient(circle at 86% 18%, rgba(251, 197, 49, 0.16), transparent 30%),
+                rgba(15, 23, 42, 0.92);
+            box-shadow: 0 32px 110px rgba(0, 0, 0, 0.48);
+            transform: scale(0.88) translateY(20px);
+            filter: blur(10px);
+            transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.28s ease;
+        }
+
+        .ye-soundboard-backdrop.show .ye-soundboard-widget {
+            transform: scale(1) translateY(0);
+            filter: blur(0);
+        }
+
+        .ye-soundboard-header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: start;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .ye-soundboard-title {
+            margin: 0;
+            color: #ffffff;
+            font-size: clamp(1.4rem, 4vw, 1.88rem);
+            font-weight: 900;
+        }
+
+        .ye-soundboard-close {
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            font: inherit;
+            font-size: 1.5rem;
+            font-weight: 900;
+        }
+
+        .ye-soundboard-close:hover,
+        .ye-soundboard-close:focus-visible {
+            outline: none;
+            background: rgba(255, 255, 255, 0.16);
+        }
+
+        .ye-soundboard-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .ye-soundboard-options {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .version-menu-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: grid;
+            place-items: center;
+            padding: 18px;
+            background: rgba(15, 23, 42, 0.42);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.18s ease;
+        }
+
+        .version-menu-backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .version-menu {
+            width: min(390px, 100%);
+            padding: 18px;
+            border-radius: 22px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 28px 80px rgba(0, 0, 0, 0.38);
+            backdrop-filter: blur(18px);
+            transform: translateY(10px) scale(0.98);
+            transition: transform 0.18s ease;
+        }
+
+        .version-menu-backdrop.show .version-menu {
+            transform: translateY(0) scale(1);
+        }
+
+        .version-menu-title {
+            margin: 0 0 12px 0;
+            font-size: 1rem;
+            font-weight: 900;
+            color: white;
+        }
+
+        .version-menu-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .version-menu-option {
+            width: 100%;
+            min-height: 52px;
+            padding: 0 14px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 900;
+            text-align: left;
+        }
+
+        .version-menu-option:hover,
+        .version-menu-option:focus-visible {
+            outline: none;
+            background: rgba(255, 255, 255, 0.16);
+            border-color: rgba(251, 197, 49, 0.42);
+        }
+
+        .version-menu-cancel {
+            margin-top: 12px;
+            width: 100%;
+            min-height: 44px;
+            border: 0;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--soft-blue-text);
+            cursor: pointer;
+            font: inherit;
+            font-weight: 900;
+        }
+
+        .admin-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 30;
+            display: grid;
+            place-items: center;
+            padding: 18px;
+            background: rgba(15, 23, 42, 0.48);
+            opacity: 0;
+            pointer-events: none;
+            backdrop-filter: blur(0);
+            transition: opacity 0.22s ease, backdrop-filter 0.3s ease;
+        }
+
+        .admin-backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+            backdrop-filter: blur(16px);
+        }
+
+        .admin-widget {
+            width: min(620px, 100%);
+            max-height: min(720px, calc(100vh - 36px));
+            overflow: hidden;
+            padding: clamp(20px, 5vw, 30px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 28px;
+            background:
+                radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.2), transparent 34%),
+                radial-gradient(circle at 86% 18%, rgba(251, 197, 49, 0.16), transparent 30%),
+                rgba(15, 23, 42, 0.9);
+            box-shadow: 0 34px 115px rgba(0, 0, 0, 0.5);
+            transform: scale(0.86) translateY(22px);
+            filter: blur(12px);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.3s ease;
+        }
+
+        .admin-backdrop.show .admin-widget {
+            transform: scale(1) translateY(0);
+            filter: blur(0);
+        }
+
+        .admin-header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: start;
+            text-align: left;
+        }
+
+        .admin-title {
+            margin: 0;
+            color: white;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            line-height: 0.96;
+        }
+
+        .admin-copy {
+            margin: 10px 0 0;
+            color: var(--soft-blue-text);
+            line-height: 1.5;
+        }
+
+        .admin-close {
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            font: inherit;
+            font-size: 1.5rem;
+            font-weight: 900;
+        }
+
+        .admin-pin-panel,
+        .admin-tools-panel {
+            margin-top: 18px;
+        }
+
+        .admin-pin-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+        }
+
+        .admin-pin-input {
+            min-height: 54px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 16px;
+            padding: 0 16px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font: inherit;
+            font-size: 1.1rem;
+            font-weight: 900;
+            letter-spacing: 0.18em;
+            text-align: center;
+            outline: none;
+        }
+
+        .admin-pin-submit {
+            min-height: 54px;
+            border: 0;
+            border-radius: 16px;
+            padding: 0 18px;
+            background: linear-gradient(135deg, var(--accent), #f59e0b);
+            color: var(--dark);
+            cursor: pointer;
+            font: inherit;
+            font-weight: 950;
+        }
+
+        .admin-error {
+            min-height: 1.3em;
+            margin: 10px 0 0;
+            color: #fecaca;
+            font-weight: 850;
+            text-align: left;
+        }
+
+        .admin-hold-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 22px;
+            z-index: 31;
+            width: min(360px, calc(100vw - 36px));
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 18px;
+            background: rgba(15, 23, 42, 0.92);
+            box-shadow: 0 22px 70px rgba(0, 0, 0, 0.42);
+            backdrop-filter: blur(18px);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(-50%) translateY(16px) scale(0.96);
+            filter: blur(8px);
+            transition: opacity 0.18s ease, transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.22s ease;
+        }
+
+        .admin-hold-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0) scale(1);
+            filter: blur(0);
+        }
+
+        .admin-hold-toast.completing {
+            animation: adminHoldToDialog 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .admin-hold-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 9px;
+            color: white;
+            font-size: 0.84rem;
+            font-weight: 950;
+        }
+
+        .admin-hold-percent {
+            color: #fde68a;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .admin-hold-track {
+            height: 9px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.13);
+        }
+
+        .admin-hold-fill {
+            width: 100%;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--violet));
+            transform: scaleX(var(--admin-progress, 0));
+            transform-origin: left center;
+            box-shadow: 0 0 22px rgba(56, 189, 248, 0.38);
+        }
+
+        .admin-tools-panel {
+            display: none;
+            transform: translateY(42px);
+            opacity: 0;
+            filter: blur(8px);
+        }
+
+        .admin-widget.unlocked .admin-pin-panel {
+            display: none;
+        }
+
+        .admin-widget.unlocked .admin-tools-panel {
+            display: grid;
+            gap: 14px;
+            animation: adminToolsRise 0.36s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .admin-tool-card {
+            min-height: 118px;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 14px;
+            align-items: center;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            text-align: left;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
+        }
+
+        .admin-tool-icon {
+            width: 58px;
+            height: 58px;
+            display: grid;
+            place-items: center;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.14);
+            font-size: 1.45rem;
+        }
+
+        .admin-tool-title {
+            display: block;
+            font-weight: 950;
+        }
+
+        .admin-tool-desc {
+            display: block;
+            margin-top: 5px;
+            color: var(--soft-blue-text);
+            line-height: 1.4;
+        }
+
+        .quick-hint {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            color: var(--soft-blue-text);
+            font-size: 0.95rem;
+        }
+
+        .status-strip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: -4px;
+            color: var(--soft-blue-text);
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--green);
+            box-shadow: 0 0 18px rgba(52, 211, 153, 0.86);
+            animation: pulseDot 1.8s ease-in-out infinite;
+        }
+        .sparkles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.88);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.68);
+            opacity: 0.45;
+            animation: sparkleFloat 7s ease-in-out infinite;
+        }
+
+        .sparkle:nth-child(1) { left: 12%; top: 22%; animation-delay: 0s; }
+        .sparkle:nth-child(2) { left: 82%; top: 28%; animation-delay: 1.1s; }
+        .sparkle:nth-child(3) { left: 18%; top: 76%; animation-delay: 2.2s; }
+        .sparkle:nth-child(4) { left: 72%; top: 78%; animation-delay: 3.1s; }
+        .sparkle:nth-child(5) { left: 50%; top: 12%; animation-delay: 4.2s; }
+        .sparkle:nth-child(6) { left: 92%; top: 58%; animation-delay: 5.4s; }
+
+        .keycap {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 28px;
+            padding: 0 9px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: white;
+            font-size: 0.82rem;
+            font-weight: 900;
+            box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.18);
+        }
+
+        footer {
+            position: fixed;
+            left: 18px;
+            right: 18px;
+            /* Footer-Hoehe/Tiefe einstellen: negativer = weiter hinter dem Big Widget, positiver = weiter nach oben. */
+            bottom: clamp(-110px, 1vh, 220px);
+            z-index: 0;
+            width: min(680px, calc(100% - 36px));
+            margin: 0 auto;
+            padding: 12px 16px;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.54);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--soft-blue-text);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+            font-size: 0.9rem;
+            opacity: 0.72;
+            pointer-events: auto;
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        .footer-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+        }
+
+        .footer-easteregg {
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 800;
+            opacity: 0.5;
+        }
+
+        .impressum-trigger {
+            position: relative;
+            isolation: isolate;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 24px;
+            padding: 0 10px;
+            overflow: hidden;
+            border: 1px solid rgba(251, 197, 49, 0.24);
+            border-radius: 999px;
+            background:
+                radial-gradient(circle at 25% 0%, rgba(255, 255, 255, 0.22), transparent 42%),
+                rgba(255, 255, 255, 0.1);
+            color: #fde68a;
+            cursor: pointer;
+            font: inherit;
+            font-size: 0.68rem;
+            font-weight: 950;
+            text-decoration: none;
+            box-shadow: 0 8px 24px rgba(251, 197, 49, 0.12);
+            transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+            animation: impressumPulse 2.8s ease-in-out infinite;
+        }
+
+        .impressum-trigger::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.26), transparent);
+            transform: translateX(-120%) skewX(-12deg);
+            transition: transform 0.5s ease;
+        }
+
+        .impressum-trigger:hover,
+        .impressum-trigger:focus-visible {
+            outline: none;
+            transform: translateY(-2px) scale(1.05);
+            border-color: rgba(251, 197, 49, 0.48);
+            background: rgba(255, 255, 255, 0.16);
+            box-shadow: 0 12px 32px rgba(251, 197, 49, 0.2);
+            animation-play-state: paused;
+        }
+
+        .impressum-trigger:hover::before,
+        .impressum-trigger:focus-visible::before {
+            transform: translateX(120%) skewX(-12deg);
+        }
+
+        .impressum-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 40;
+            display: grid;
+            place-items: center;
+            padding: 18px;
+            background: rgba(15, 23, 42, 0.48);
+            opacity: 0;
+            pointer-events: none;
+            backdrop-filter: blur(0);
+            transition: opacity 0.22s ease, backdrop-filter 0.3s ease;
+        }
+
+        .impressum-backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+            backdrop-filter: blur(16px);
+        }
+
+        .impressum-widget {
+            width: min(760px, 100%);
+            max-height: min(680px, calc(100vh - 36px));
+            overflow: auto;
+            padding: clamp(20px, 5vw, 30px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 28px;
+            background:
+                radial-gradient(circle at 12% 0%, rgba(56, 189, 248, 0.2), transparent 34%),
+                radial-gradient(circle at 86% 18%, rgba(251, 197, 49, 0.16), transparent 30%),
+                rgba(15, 23, 42, 0.92);
+            box-shadow: 0 34px 115px rgba(0, 0, 0, 0.5);
+            transform: scale(0.86) translateY(22px);
+            filter: blur(12px);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.3s ease;
+        }
+
+        .impressum-backdrop.show .impressum-widget {
+            transform: scale(1) translateY(0);
+            filter: blur(0);
+        }
+
+        .impressum-header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            align-items: start;
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .impressum-title {
+            margin: 0;
+            color: white;
+            font-size: clamp(1.8rem, 5vw, 3.2rem);
+            line-height: 0.96;
+            letter-spacing: -0.04em;
+        }
+
+        .impressum-close {
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            font: inherit;
+            font-size: 1.5rem;
+            font-weight: 900;
+        }
+
+        .impressum-close:hover,
+        .impressum-close:focus-visible {
+            outline: none;
+            background: rgba(255, 255, 255, 0.16);
+        }
+
+        .impressum-content {
+            display: grid;
+            gap: 14px;
+            text-align: left;
+        }
+
+        .impressum-content p,
+        .impressum-content h4 {
+            margin: 0;
+        }
+
+        .impressum-content h4 {
+            margin-top: 4px;
+            color: #fde68a;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .impressum-content p {
+            color: var(--soft-blue-text);
+            line-height: 1.55;
+        }
+
+        .impressum-content a {
+            color: #fde68a;
+            font-weight: 900;
+            text-decoration: none;
+        }
+
+        .impressum-content a:hover,
+        .impressum-content a:focus-visible {
+            outline: none;
+            text-decoration: underline;
+        }
+
+        @keyframes pageEnter {
+            from {
+                opacity: 0;
+                transform: translateY(18px) scale(0.985);
+                filter: blur(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        @keyframes floatOrb {
+            from {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+
+            to {
+                transform: translate3d(42px, 34px, 0) scale(1.08);
+            }
+        }
+
+        @keyframes shine {
+            0%, 58% {
+                transform: translateX(-70%) skewX(-10deg);
+                opacity: 0;
+            }
+
+            72% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateX(70%) skewX(-10deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes textGlow {
+            from {
+                background-position: 0% center;
+            }
+
+            to {
+                background-position: 100% center;
+            }
+        }
+
+        @keyframes backgroundDrift {
+            from {
+                background-position: 0% 0%;
+            }
+
+            to {
+                background-position: 100% 100%;
+            }
+        }
+
+        @keyframes heroItemEnter {
+            from {
+                opacity: 0;
+                transform: translateY(14px) scale(0.985);
+                filter: blur(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        @keyframes iconPop {
+            0% {
+                transform: scale(1) rotate(0deg);
+            }
+
+            42% {
+                transform: scale(1.12) rotate(-4deg);
+            }
+
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes pulseDot {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.72;
+            }
+
+            50% {
+                transform: scale(1.42);
+                opacity: 1;
+            }
+        }
+
+        @keyframes sparkleFloat {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+                opacity: 0.28;
+            }
+
+            50% {
+                transform: translateY(-22px) scale(1.35);
+                opacity: 0.78;
+            }
+        }
+
+        @keyframes versionHoldFill {
+            to {
+                transform: scaleX(1);
+            }
+        }
+
+        @keyframes adminToolsRise {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        @keyframes adminHoldToDialog {
+            55% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(-24vh) scale(1.08);
+                filter: blur(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-34vh) scale(1.22);
+                filter: blur(12px);
+            }
+        }
+
+        @keyframes impressumPulse {
+            0%, 100% {
+                box-shadow: 0 8px 24px rgba(251, 197, 49, 0.12);
+            }
+
+            50% {
+                box-shadow: 0 8px 28px rgba(56, 189, 248, 0.18), 0 0 18px rgba(251, 197, 49, 0.16);
+            }
+        }
+
+        @media (max-width: 760px) {
+            body {
+                align-items: flex-start;
+                padding-top: 22px;
+            }
+
+            .container {
+                padding: 24px;
+                border-radius: 24px;
+            }
+
+            .links {
+                grid-template-columns: 1fr;
+            }
+
+            .more-games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .more-games-header {
+                grid-template-columns: 1fr;
+            }
+
+            .more-games-close {
+                justify-self: end;
+                order: -1;
+            }
+
+            .admin-header,
+            .admin-pin-row,
+            .impressum-header {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-close,
+            .impressum-close {
+                justify-self: end;
+                order: -1;
+            }
+
+            .app-card {
+                min-height: 112px;
+            }
+        }
+
+        @media (max-width: 460px) {
+            .app-card {
+                align-items: flex-start;
+                padding: 18px;
+            }
+
+            .card-icon {
+                width: 50px;
+                height: 50px;
+                border-radius: 16px;
+                font-size: 1.5rem;
+            }
+
+            .card-badge {
+                position: static;
+                width: fit-content;
+                margin-top: 8px;
+            }
+
+            #portfolioLink .card-badge {
+                font-size: 0;
+            }
+
+            #portfolioLink .card-badge::after {
+                content: "Halten = Versionen";
+                font-size: 0.72rem;
+            }
+
+            .quick-hint .keycap {
+                display: none;
+            }
+
+            .quick-hint span:last-child {
+                font-size: 0;
+            }
+
+            .quick-hint span:last-child::after {
+                content: "Portfolio-Rechner halten, um Alt, Aktiv oder Canary zu öffnen.";
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
+                transition: none !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+    <style id="bb-touch-zoom-guard-style">
+        html,
+        body {
+            touch-action: manipulation;
+            -ms-touch-action: manipulation;
+            -webkit-text-size-adjust: 100%;
+        }
+    </style>
+    <link rel="stylesheet" href="tutorial.css">
+</head>
+<body>
+    <div class="noise-layer" aria-hidden="true"></div>
+    <div class="sparkles" aria-hidden="true">
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+        <span class="sparkle"></span>
+    </div>
+
+    <main class="container">
+        <section class="hero" aria-labelledby="pageTitle">
+            <div class="eyebrow-row">
+                <span class="pill hot" id="adminMobileTrigger">✨ BlopperBold Labs</span>
+                <span class="pill">Beta-Spielplatz</span>
+                <span class="pill">Made mit bisschen zu viel Koffein</span>
+            </div>
+
+            <h1 id="pageTitle">
+                Willkommen bei<br>
+                <span class="gradient-text">BlopperBold.</span>
+            </h1>
+
+            <p class="subtitle">
+                Deine kleine Kommandozentrale für Experimente, Rechner und absolut seriöse Web-App-Machenschaften. Made by Miro Adomat and Til Freitag.
+            </p>
+            <div class="status-strip">
+                <span class="status-dot"></span>
+                <span>System online · Experimente geladen · Design-Abteilung eskaliert</span>
+            </div>
+
+            <a class="app-card" href="Games/100prozent.html">
+                <span class="card-icon">💯</span>
+                <span class="card-content">
+                    <span class="card-title">Zur 100% Seite</span>
+                    <span class="card-desc">Wenn schon unnötig, dann wenigstens komplett. Hundert Prozent halt.</span>
+                    <span class="card-badge">100%</span>
+                </span>
+            </a>
+            
+            <a class="app-card" href="Games/gambl.html">
+                    <span class="card-icon">🎲</span>
+                    <span class="card-content">
+                        <span class="card-title">Zur Glücksspiel Simulation</span>
+                        <span class="card-desc">Risiko ohne echten Finanziellen Ruin. Also quasi Finanzen auf Spielplatzmodus.</span>
+                        <span class="card-badge">Sim</span>
+                    </span>
+                </a>
+            
+            <nav class="links" aria-label="Projektlinks">
+                <a class="app-card" href="Games/3expo.html">
+                    <span class="card-icon">🚀</span>
+                    <span class="card-content">
+                        <span class="card-title">Zur 3. Expo</span>
+                        <span class="card-desc">Einmal rein in die Show-Abteilung. Viel Effekt, wenig Langeweile.</span>
+                        <span class="card-badge">Showcase</span>
+                    </span>
+                </a>
+
+                <a class="app-card" href="Aktienrechner/Aktiv/Since.html" id="portfolioLink">
+                    <span class="card-icon">📈</span>
+                    <span class="card-content">
+                        <span class="card-title">Investment Portfolio Rechner</span>
+                        <span class="card-desc">Historische Aktien-Performance, Dividenden und Was-wäre-wenn-Rechnungen.</span>
+                        <span class="card-badge">Halten für Versionen</span>
+                    </span>
+                </a>
+
+                <button class="more-games-trigger" type="button" id="moreGamesButton">
+                    <span>Mehr anzeigen ✨</span>
+                </button>
+            </nav>
+        </section>
+    </main>
+
+    <div class="more-games-backdrop" id="moreGamesBackdrop" aria-hidden="true">
+        <section class="more-games-widget" role="dialog" aria-modal="true" aria-labelledby="moreGamesTitle">
+            <div class="more-games-header">
+                <div>
+                    <span class="more-games-kicker">Extra Games</span>
+                    <h2 class="more-games-title" id="moreGamesTitle">Die Dopamin-Schublade</h2>
+                    <p class="more-games-copy">Kurze Games mit Score, Flow und genug BlopperBold-Energie für eine schnelle Runde zwischendurch.</p>
+                </div>
+                <button class="more-games-close" type="button" id="moreGamesClose" aria-label="Mehr anzeigen schließen">×</button>
+            </div>
+
+            <div class="more-games-grid">
+                <a class="app-card ye-soundboard-trigger-btn" href="javascript:void(0)">
+                    <span class="card-icon">🎹</span>
+                    <span class="card-content">
+                        <span class="card-title">Runaway Soundboard</span>
+                        <span class="card-desc">Piano hauen, Samples feuern und den Beat live melken.</span>
+                        <span class="card-badge">Ye Soundboard</span>
+                    </span>
+                </a>
+
+                <a class="app-card" href="Games/biasbingo.html">
+                    <span class="card-icon">🧠</span>
+                    <span class="card-content">
+                        <span class="card-title">Bias Bingo</span>
+                        <span class="card-desc">Denkfehler erkennen, Hype-Schaden vermeiden und trotzdem Quatsch anklicken.</span>
+                        <span class="card-badge">Schlau</span>
+                    </span>
+                </a>
+
+                <a class="app-card" href="Games/entscheidomat.html">
+                    <span class="card-icon">⚖️</span>
+                    <span class="card-content">
+                        <span class="card-title">Entscheidomat</span>
+                        <span class="card-desc">Alltagsentscheidungen gegen Geld, Zeit, Energie und Zukunftswert rechnen.</span>
+                        <span class="card-badge">Nützlich</span>
+                    </span>
+                </a>
+
+                <a class="app-card" href="Games/impuls.html">
+                    <span class="card-icon">⚡</span>
+                    <span class="card-content">
+                        <span class="card-title">Impuls</span>
+                        <span class="card-desc">Reflex-Klicker mit Combo, Störern und 45 Sekunden Score-Rausch.</span>
+                        <span class="card-badge">Reflex</span>
+                    </span>
+                </a>
+
+                <a class="app-card" href="Games/takt.html">
+                    <span class="card-icon">🎚️</span>
+                    <span class="card-content">
+                        <span class="card-title">Takt</span>
+                        <span class="card-desc">Triff die goldene Zone mit Space, Enter oder Button. Perfekt macht süchtig.</span>
+                        <span class="card-badge">Timing</span>
+                    </span>
+                </a>
+
+                <a class="app-card" href="Games/sortfall.html">
+                    <span class="card-icon">🗂️</span>
+                    <span class="card-content">
+                        <span class="card-title">Sortfall</span>
+                        <span class="card-desc">Begriffe blitzschnell sortieren: jetzt, planen oder weg damit.</span>
+                        <span class="card-badge">Flow</span>
+                    </span>
+                </a>
+
+                <a class="app-card" href="Games/kurve.html">
+                    <span class="card-icon">📉</span>
+                    <span class="card-content">
+                        <span class="card-title">Kurve</span>
+                        <span class="card-desc">Kaufen, halten, verkaufen. Kleine Risiko-Kurve mit schnellen Entscheidungen.</span>
+                        <span class="card-badge">Risk</span>
+                    </span>
+                </a>
+
+            </div>
+        </section>
+    </div>
+
+    <div class="ye-soundboard-backdrop" id="yeSoundboardBackdrop" aria-hidden="true">
+        <section class="ye-soundboard-widget" role="dialog" aria-modal="true" aria-labelledby="yeSoundboardTitle">
+            <div class="ye-soundboard-header">
+                <div>
+                    <span class="more-games-kicker">Ye Soundboard</span>
+                    <h2 class="ye-soundboard-title" id="yeSoundboardTitle">Wähle deinen Modus</h2>
+                    <p class="more-games-copy" style="margin-top: 8px;">Spiele das originale Runaway-Klavier oder lade eigene Sounds in deinen persönlichen Sampler.</p>
+                </div>
+                <button class="ye-soundboard-close" type="button" id="yeSoundboardClose" aria-label="Schließen">×</button>
+            </div>
+
+            <div class="ye-soundboard-options">
+                <a class="app-card" href="ye-soundboard/index.html" style="text-align: left; margin: 0; min-height: 140px;">
+                    <span class="card-icon">🎹</span>
+                    <span class="card-content">
+                        <span class="card-title">Runaway Soundboard</span>
+                        <span class="card-desc">Piano hauen, Samples feuern und den Beat live melken.</span>
+                        <span class="card-badge">Original</span>
+                    </span>
+                </a>
+                <a class="app-card" href="ye-soundboard/sampler.html" style="text-align: left; margin: 0; min-height: 140px;">
+                    <span class="card-icon">🎛️</span>
+                    <span class="card-content">
+                        <span class="card-title">Eigener Sampler</span>
+                        <span class="card-desc">Eigene Sounds per Drag & Drop reinladen, Pitch & Reverb anpassen.</span>
+                        <span class="card-badge">Custom</span>
+                    </span>
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <div class="version-menu-backdrop" id="versionMenuBackdrop" aria-hidden="true">
+        <div class="version-menu" role="dialog" aria-modal="true" aria-labelledby="versionMenuTitle">
+            <p class="version-menu-title" id="versionMenuTitle">Portfolio-Version öffnen</p>
+            <div class="version-menu-options">
+                <button class="version-menu-option" type="button" data-version-url="Aktienrechner/Alt/Since.html">Alt</button>
+                <button class="version-menu-option" type="button" data-version-url="Aktienrechner/Aktiv/Since.html">Aktiv</button>
+                <button class="version-menu-option" type="button" data-version-url="Aktienrechner/Canary/Since.html">Canary</button>
+            </div>
+            <button class="version-menu-cancel" type="button" id="versionMenuCancel">Abbrechen</button>
+        </div>
+    </div>
+
+    <div class="admin-backdrop" id="adminBackdrop" aria-hidden="true">
+        <section class="admin-widget" id="adminWidget" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+            <div class="admin-header">
+                <div>
+                    <span class="more-games-kicker">Admin</span>
+                    <h2 class="admin-title" id="adminTitle">Admin Tools</h2>
+                    <p class="admin-copy">Versteckte Werkzeuge für Cache, Debug und kleine Maschinenraum-Sachen.</p>
+                </div>
+                <button class="admin-close" type="button" id="adminClose" aria-label="Admin Tools schließen">×</button>
+            </div>
+
+            <form class="admin-pin-panel" id="adminPinForm">
+                <div class="admin-pin-row">
+                    <input class="admin-pin-input" id="adminPinInput" type="password" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="PIN">
+                    <button class="admin-pin-submit" type="submit">Entsperren</button>
+                </div>
+                <p class="admin-error" id="adminError" aria-live="polite"></p>
+            </form>
+
+            <div class="admin-tools-panel" id="adminToolsPanel">
+                <a class="admin-tool-card" href="admin-tools/index.html">
+                    <span class="admin-tool-icon">⌘</span>
+                    <span>
+                        <span class="admin-tool-title">Admin Dashboard</span>
+                        <span class="admin-tool-desc">CarPlay-Menü für Reset Center, Feature Flags, Backup, System Check und Storage.</span>
+                    </span>
+                </a>
+
+                <a class="admin-tool-card" href="admin-tools/localstorage.html">
+                    <span class="admin-tool-icon">🧰</span>
+                    <span>
+                        <span class="admin-tool-title">Local Storage Viewer</span>
+                        <span class="admin-tool-desc">Browser-Cache ansehen, bearbeiten, exportieren oder einzelne Keys löschen.</span>
+                    </span>
+                </a>
+
+                <a class="admin-tool-card ye-soundboard-trigger-btn" href="javascript:void(0)">
+                    <span class="admin-tool-icon">🎹</span>
+                    <span>
+                        <span class="admin-tool-title">Runaway Soundboard</span>
+                        <span class="admin-tool-desc">Experimentelles Ye-Soundboard, noch nicht öffentlich in der Startseiten-Schublade.</span>
+                    </span>
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <div class="admin-hold-toast" id="adminHoldToast" aria-hidden="true">
+        <div class="admin-hold-head">
+            <span>Admin-Zugang wird geladen</span>
+            <span class="admin-hold-percent" id="adminHoldPercent">0%</span>
+        </div>
+        <div class="admin-hold-track">
+            <div class="admin-hold-fill" id="adminHoldFill"></div>
+        </div>
+    </div>
+
+    <div class="impressum-backdrop" id="impressumBackdrop" aria-hidden="true">
+        <section class="impressum-widget" role="dialog" aria-modal="true" aria-labelledby="impressumTitle">
+            <div class="impressum-header">
+                <div>
+                    <span class="more-games-kicker">Legal Stuff</span>
+                    <h2 class="impressum-title" id="impressumTitle">Impressum</h2>
+                </div>
+                <button class="impressum-close" type="button" id="impressumClose" aria-label="Impressum schließen">×</button>
+            </div>
+
+            <div class="impressum-content">
+                <p>Til Freitag</p>
+                <p>
+                    Ahornstraße 21<br>
+                    19075 Pampow
+                </p>
+                <h4>Kontakt</h4>
+                <p>
+                    Telefon: +49 1522 9234713<br>
+                    E-Mail: <a href="mailto:business@blopperbold.org">business@blopperbold.org</a>
+                </p>
+                <h4>Datenschutz</h4>
+                <p>
+                    Die Datenschutzerklärung ist hier abrufbar:
+                    <a href="datenschutz.html">Datenschutzerklärung öffnen</a>
+                </p>
+                <h4>Haftungsausschluss</h4>
+                <p>
+                    Trotz sorgfältiger inhaltlicher Kontrolle übernehmen wir keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich.
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>2026 BlopperBold. Alle Rechte vorbehalten.</p>
+        <div class="footer-row">
+            <button class="impressum-trigger" type="button" id="impressumButton">Impressum</button>
+            <span class="footer-easteregg">Made by Til &amp; Miro with &lt;3</span>
+            <a class="impressum-trigger" href="datenschutz.html">Datenschutz</a>
+        </div>
+    </footer>
+
+    <script>
+        const moreGamesButton = document.getElementById('moreGamesButton');
+        const moreGamesBackdrop = document.getElementById('moreGamesBackdrop');
+        const moreGamesClose = document.getElementById('moreGamesClose');
+        const portfolioLink = document.getElementById('portfolioLink');
+        const versionMenuBackdrop = document.getElementById('versionMenuBackdrop');
+        const versionMenuCancel = document.getElementById('versionMenuCancel');
+        const adminBackdrop = document.getElementById('adminBackdrop');
+        const adminWidget = document.getElementById('adminWidget');
+        const adminClose = document.getElementById('adminClose');
+        const adminPinForm = document.getElementById('adminPinForm');
+        const adminPinInput = document.getElementById('adminPinInput');
+        const adminError = document.getElementById('adminError');
+        const adminHoldToast = document.getElementById('adminHoldToast');
+        const adminHoldPercent = document.getElementById('adminHoldPercent');
+        const adminMobileTrigger = document.getElementById('adminMobileTrigger');
+        const impressumButton = document.getElementById('impressumButton');
+        const impressumBackdrop = document.getElementById('impressumBackdrop');
+        const impressumClose = document.getElementById('impressumClose');
+        let versionHoldTimer = null;
+        let versionHoldTriggered = false;
+        let versionHoldActive = false;
+        let versionHoldMoved = false;
+        let versionHoldStartX = 0;
+        let versionHoldStartY = 0;
+        let adminHoldRaf = null;
+        let adminHoldStart = 0;
+        let adminHoldActive = false;
+        let adminMobileHoldActive = false;
+        let adminMobileHoldStartX = 0;
+        let adminMobileHoldStartY = 0;
+
+        function openMoreGames() {
+            moreGamesBackdrop.classList.add('show');
+            moreGamesBackdrop.setAttribute('aria-hidden', 'false');
+            moreGamesClose.focus();
+        }
+
+        function closeMoreGames() {
+            moreGamesBackdrop.classList.remove('show');
+            moreGamesBackdrop.setAttribute('aria-hidden', 'true');
+            moreGamesButton.focus();
+        }
+
+        function openImpressum() {
+            impressumBackdrop.classList.add('show');
+            impressumBackdrop.setAttribute('aria-hidden', 'false');
+            impressumClose.focus();
+        }
+
+        function closeImpressum() {
+            impressumBackdrop.classList.remove('show');
+            impressumBackdrop.setAttribute('aria-hidden', 'true');
+            impressumButton.focus();
+        }
+
+        moreGamesButton.addEventListener('click', openMoreGames);
+        moreGamesClose.addEventListener('click', closeMoreGames);
+        impressumButton.addEventListener('click', openImpressum);
+        impressumClose.addEventListener('click', closeImpressum);
+
+        moreGamesBackdrop.addEventListener('click', function(event) {
+            if (event.target === moreGamesBackdrop) {
+                closeMoreGames();
+            }
+        });
+
+        impressumBackdrop.addEventListener('click', function(event) {
+            if (event.target === impressumBackdrop) {
+                closeImpressum();
+            }
+        });
+
+        // Ye Soundboard Selection Modal
+        const yeSoundboardBackdrop = document.getElementById('yeSoundboardBackdrop');
+        const yeSoundboardClose = document.getElementById('yeSoundboardClose');
+        const yeSoundboardTriggers = document.querySelectorAll('.ye-soundboard-trigger-btn');
+
+        function openYeSoundboardChoice() {
+            // Close more games if open
+            closeMoreGames();
+            
+            yeSoundboardBackdrop.classList.add('show');
+            yeSoundboardBackdrop.setAttribute('aria-hidden', 'false');
+            yeSoundboardClose.focus();
+        }
+
+        function closeYeSoundboardChoice() {
+            yeSoundboardBackdrop.classList.remove('show');
+            yeSoundboardBackdrop.setAttribute('aria-hidden', 'true');
+        }
+
+        yeSoundboardTriggers.forEach(trigger => {
+            trigger.addEventListener('click', openYeSoundboardChoice);
+        });
+
+        yeSoundboardClose.addEventListener('click', closeYeSoundboardChoice);
+        yeSoundboardBackdrop.addEventListener('click', function(event) {
+            if (event.target === yeSoundboardBackdrop) {
+                closeYeSoundboardChoice();
+            }
+        });
+
+        function clearVersionHold() {
+            window.clearTimeout(versionHoldTimer);
+            versionHoldTimer = null;
+            versionHoldActive = false;
+            portfolioLink.classList.remove('version-hold-active');
+        }
+
+        function openVersionMenu() {
+            versionHoldTriggered = true;
+            versionHoldActive = false;
+            portfolioLink.classList.remove('version-hold-active');
+            versionMenuBackdrop.classList.add('show');
+            versionMenuBackdrop.setAttribute('aria-hidden', 'false');
+            versionMenuBackdrop.querySelector('.version-menu-option').focus();
+        }
+
+        function closeVersionMenu() {
+            versionMenuBackdrop.classList.remove('show');
+            versionMenuBackdrop.setAttribute('aria-hidden', 'true');
+        }
+
+        function openAdminPin() {
+            adminHoldActive = false;
+            adminMobileHoldActive = false;
+            window.cancelAnimationFrame(adminHoldRaf);
+            adminHoldRaf = null;
+            adminHoldToast.classList.remove('show', 'completing');
+            adminHoldToast.setAttribute('aria-hidden', 'true');
+            adminWidget.classList.remove('unlocked');
+            adminPinInput.value = '';
+            adminError.textContent = '';
+            adminBackdrop.classList.add('show');
+            adminBackdrop.setAttribute('aria-hidden', 'false');
+            window.setTimeout(() => adminPinInput.focus(), 80);
+        }
+
+        function closeAdmin() {
+            adminBackdrop.classList.remove('show');
+            adminBackdrop.setAttribute('aria-hidden', 'true');
+            adminWidget.classList.remove('unlocked');
+            adminPinInput.value = '';
+            adminError.textContent = '';
+        }
+
+        function startAdminHold() {
+            if (adminHoldActive || adminBackdrop.classList.contains('show')) return;
+            adminHoldActive = true;
+            adminHoldStart = performance.now();
+            adminHoldToast.classList.remove('completing');
+            adminHoldToast.classList.add('show');
+            adminHoldToast.setAttribute('aria-hidden', 'false');
+            adminHoldToast.style.setProperty('--admin-progress', 0);
+            adminHoldPercent.textContent = '0%';
+            adminHoldRaf = window.requestAnimationFrame(tickAdminHold);
+        }
+
+        function tickAdminHold(now) {
+            if (!adminHoldActive) return;
+
+            const progress = Math.min((now - adminHoldStart) / 2000, 1);
+            adminHoldToast.style.setProperty('--admin-progress', progress.toFixed(3));
+            adminHoldPercent.textContent = Math.round(progress * 100) + '%';
+
+            if (progress >= 1) {
+                adminHoldActive = false;
+                adminMobileHoldActive = false;
+                adminHoldToast.classList.add('completing');
+                window.setTimeout(openAdminPin, 260);
+                return;
+            }
+
+            adminHoldRaf = window.requestAnimationFrame(tickAdminHold);
+        }
+
+        function clearAdminHold() {
+            if (!adminHoldActive) return;
+            adminHoldActive = false;
+            adminMobileHoldActive = false;
+            window.cancelAnimationFrame(adminHoldRaf);
+            adminHoldRaf = null;
+            adminHoldToast.classList.remove('show', 'completing');
+            adminHoldToast.setAttribute('aria-hidden', 'true');
+            adminHoldToast.style.setProperty('--admin-progress', 0);
+            adminHoldPercent.textContent = '0%';
+        }
+
+        function startMobileAdminHold(event) {
+            if (event.pointerType === 'mouse') return;
+            if (event.cancelable) {
+                event.preventDefault();
+            }
+            adminMobileHoldActive = true;
+            adminMobileHoldStartX = event.clientX;
+            adminMobileHoldStartY = event.clientY;
+            try {
+                adminMobileTrigger.setPointerCapture(event.pointerId);
+            } catch (error) {
+                // Pointer capture is not available in every browser.
+            }
+            startAdminHold();
+        }
+
+        function moveMobileAdminHold(event) {
+            if (!adminMobileHoldActive) return;
+            const movedX = Math.abs(event.clientX - adminMobileHoldStartX);
+            const movedY = Math.abs(event.clientY - adminMobileHoldStartY);
+            if (movedX > 16 || movedY > 16) {
+                clearAdminHold();
+            }
+        }
+
+        function stopMobileAdminHold(event) {
+            if (event && event.pointerType === 'mouse') return;
+            clearAdminHold();
+        }
+
+        portfolioLink.addEventListener('click', function(event) {
+            if (versionHoldTriggered) {
+                event.preventDefault();
+                versionHoldTriggered = false;
+            }
+        });
+
+        portfolioLink.addEventListener('pointerdown', function(event) {
+            if (event.button && event.button !== 0) return;
+
+            if (event.pointerType !== 'mouse') {
+                event.preventDefault();
+            }
+
+            versionHoldTriggered = false;
+            versionHoldMoved = false;
+            versionHoldActive = true;
+            versionHoldStartX = event.clientX;
+            versionHoldStartY = event.clientY;
+            portfolioLink.classList.add('version-hold-active');
+
+            try {
+                portfolioLink.setPointerCapture(event.pointerId);
+            } catch (error) {
+                // Pointer capture is not available in every browser.
+            }
+
+            versionHoldTimer = window.setTimeout(openVersionMenu, 620);
+        });
+
+        portfolioLink.addEventListener('pointermove', function(event) {
+            if (!versionHoldActive) return;
+
+            const movedX = Math.abs(event.clientX - versionHoldStartX);
+            const movedY = Math.abs(event.clientY - versionHoldStartY);
+
+            if (movedX > 14 || movedY > 14) {
+                versionHoldMoved = true;
+                clearVersionHold();
+            }
+        });
+
+        portfolioLink.addEventListener('pointerup', function(event) {
+            if (event.pointerType !== 'mouse') {
+                event.preventDefault();
+            }
+
+            const shouldOpenNormal = event.pointerType !== 'mouse'
+                && versionHoldActive
+                && !versionHoldTriggered
+                && !versionHoldMoved;
+            clearVersionHold();
+
+            if (shouldOpenNormal) {
+                window.location.href = portfolioLink.href;
+            }
+        });
+
+        portfolioLink.addEventListener('pointerleave', function(event) {
+            if (event.pointerType === 'mouse') {
+                clearVersionHold();
+            }
+        });
+        portfolioLink.addEventListener('pointercancel', clearVersionHold);
+        portfolioLink.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+        });
+
+        versionMenuBackdrop.addEventListener('click', function(event) {
+            if (event.target === versionMenuBackdrop) {
+                closeVersionMenu();
+            }
+        });
+
+        versionMenuBackdrop.querySelectorAll('[data-version-url]').forEach(button => {
+            button.addEventListener('click', function() {
+                window.location.href = button.dataset.versionUrl;
+            });
+        });
+
+        versionMenuCancel.addEventListener('click', closeVersionMenu);
+        adminClose.addEventListener('click', closeAdmin);
+
+        adminMobileTrigger.addEventListener('pointerdown', startMobileAdminHold);
+        adminMobileTrigger.addEventListener('pointermove', moveMobileAdminHold);
+        adminMobileTrigger.addEventListener('pointerup', stopMobileAdminHold);
+        adminMobileTrigger.addEventListener('pointercancel', stopMobileAdminHold);
+        adminMobileTrigger.addEventListener('contextmenu', function(event) {
+            event.preventDefault();
+        });
+
+        adminBackdrop.addEventListener('click', function(event) {
+            if (event.target === adminBackdrop) {
+                closeAdmin();
+            }
+        });
+
+        adminPinForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            if (adminPinInput.value === '7903') {
+                adminError.textContent = '';
+                adminWidget.classList.add('unlocked');
+                return;
+            }
+
+            adminError.textContent = 'PIN falsch.';
+            adminPinInput.select();
+        });
+
+        adminPinInput.addEventListener('input', function() {
+            adminPinInput.value = adminPinInput.value.replace(/\D/g, '').slice(0, 4);
+        });
+
+        adminPinInput.addEventListener('keydown', function(event) {
+            const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Enter', 'Home', 'End'];
+
+            if (allowedKeys.includes(event.key) || event.ctrlKey || event.metaKey) {
+                return;
+            }
+
+            if (!/^\d$/.test(event.key)) {
+                event.preventDefault();
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.shiftKey && event.key.toLowerCase() === 'd' && !event.repeat) {
+                startAdminHold();
+            }
+
+            if (event.key === 'Escape') {
+                if (moreGamesBackdrop.classList.contains('show')) {
+                    closeMoreGames();
+                }
+                if (impressumBackdrop.classList.contains('show')) {
+                    closeImpressum();
+                }
+                closeVersionMenu();
+                closeAdmin();
+            }
+        });
+
+        document.addEventListener('keyup', function(event) {
+            if (event.key === 'Shift' || event.key.toLowerCase() === 'd') {
+                clearAdminHold();
+            }
+        });
+
+        window.addEventListener('blur', clearAdminHold);
+
+        let lastTouchEnd = 0;
+        const bbInteractiveTapSelector = 'button, a, input, select, textarea, label, [role="button"]';
+
+        document.addEventListener('touchend', function(event) {
+            const now = Date.now();
+            const isInteractive = event.target.closest && event.target.closest(bbInteractiveTapSelector);
+
+            if (!isInteractive && now - lastTouchEnd <= 300 && event.cancelable) {
+                event.preventDefault();
+            }
+
+            lastTouchEnd = now;
+        }, { passive: false });
+
+        document.addEventListener('contextmenu', function(event) {
+            if (event.target.closest('button, a, [role="button"]')) {
+                event.preventDefault();
+            }
+        });
+    </script>
+<script id="bb-touch-zoom-guard">
+(function() {
+    if (window.__bbTouchZoomGuard) return;
+    window.__bbTouchZoomGuard = true;
+
+    let lastTouchEnd = 0;
+    const interactiveSelector = 'button, a, input, select, textarea, label, [role="button"], .progress-bar-container, .card, .chart';
+
+    document.addEventListener('touchend', function(event) {
+        const now = Date.now();
+        const isInteractive = event.target.closest && event.target.closest(interactiveSelector);
+
+        if (!isInteractive && now - lastTouchEnd <= 350 && event.cancelable) {
+            event.preventDefault();
+        }
+
+        lastTouchEnd = now;
+    }, { passive: false });
+
+    document.addEventListener('dblclick', function(event) {
+        if (event.cancelable) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach(function(eventName) {
+        document.addEventListener(eventName, function(event) {
+            if (event.cancelable) {
+                event.preventDefault();
+            }
+        }, { passive: false });
+    });
+})();
+</script>
+<script src="tutorial.js" defer></script>
+</body>
+</html>
