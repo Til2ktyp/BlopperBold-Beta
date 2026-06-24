@@ -500,7 +500,8 @@
                 <button class="tutorial-button" id="tutorialButton" type="button" style="margin-top: 12px;">Runaway Tutorial</button>
                 <button class="tutorial-button" id="recordBtn" type="button" style="margin-top: 12px; background: rgba(229, 169, 59, 0.1); border-color: rgba(229, 169, 59, 0.4); color: #fde68a;">⏺ Aufnehmen</button>
                 <button class="tutorial-button" id="playBtn" type="button" style="margin-top: 12px; display: none;">▶ Abspielen</button>
-                <button class="tutorial-button" id="stopPlayBtn" type="button" style="margin-top: 12px; display: none; background: rgba(229, 169, 59, 0.1); border-color: rgba(229, 169, 59, 0.4); color: #fde68a;">⏹ Stoppen</button>
+                <button class="tutorial-button" id="playPresetBtn" type="button" style="margin-top: 12px; background: rgba(45, 212, 191, 0.1); border-color: rgba(45, 212, 191, 0.4); color: #cbfbf4;">✨ Preset abspielen</button>
+                <button class="tutorial-button" id="stopPlayBtn" type="button" style="margin-top: 12px; display: none; background: rgba(229, 169, 59, 0.1); border-color: rgba(229, 169, 59, 0.4); color: #fde68a;"> Stoppen</button>
                 <button class="tutorial-button" id="downloadBtn" type="button" style="margin-top: 12px; display: none; background: rgba(45, 212, 191, 0.1); border-color: rgba(45, 212, 191, 0.4); color: #cbfbf4;">📥 Download</button>
                 <button class="tutorial-button" id="importBtn" type="button" style="margin-top: 12px; background: rgba(45, 212, 191, 0.1); border-color: rgba(45, 212, 191, 0.4); color: #cbfbf4;">📤 Importieren</button>
                 <a class="tutorial-button" href="sampler.html" style="margin-top: 12px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; background: rgba(45, 212, 191, 0.1); border-color: rgba(45, 212, 191, 0.4); color: #cbfbf4;">🎛️ Eigener Sampler</a>
@@ -607,6 +608,7 @@
         const volumeSlider = document.getElementById('volumeSlider');
         const recordBtn = document.getElementById('recordBtn');
         const playBtn = document.getElementById('playBtn');
+        const playPresetBtn = document.getElementById('playPresetBtn');
         const stopPlayBtn = document.getElementById('stopPlayBtn');
         const downloadBtn = document.getElementById('downloadBtn');
         const importBtn = document.getElementById('importBtn');
@@ -997,20 +999,117 @@
             }
         }
 
-        function startPlayback() {
-            if (recordedEvents.length === 0) return;
+        const presetEvents = [
+          { "key": "a", "time": 1125 },
+          { "key": "a", "time": 2381 },
+          { "key": "s", "time": 3494 },
+          { "key": "d", "time": 4659 },
+          { "key": "d", "time": 5762 },
+          { "key": "d", "time": 6937 },
+          { "key": "f", "time": 8057.000000000015 },
+          { "key": "g", "time": 9085 },
+          { "key": "g", "time": 10245 },
+          { "key": "g", "time": 11375 },
+          { "key": "h", "time": 12453.000000000015 },
+          { "key": "j", "time": 13573 },
+          { "key": "j", "time": 14791 },
+          { "key": "k", "time": 15928 },
+          { "key": "a", "time": 17098 },
+          { "key": "y", "time": 17627 },
+          { "key": "c", "time": 20168 },
+          { "key": "c", "time": 20851 },
+          { "key": "c", "time": 21540 },
+          { "key": "c", "time": 22257 },
+          { "key": "c", "time": 24300 },
+          { "key": "c", "time": 24971 },
+          { "key": "c", "time": 25645 },
+          { "key": "c", "time": 26350 },
+          { "key": "c", "time": 27025 },
+          { "key": "c", "time": 27685.000000000015 },
+          { "key": "c", "time": 31175 },
+          { "key": "c", "time": 31741 },
+          { "key": "c", "time": 32437 },
+          { "key": "c", "time": 33132 },
+          { "key": "c", "time": 33391 },
+          { "key": "c", "time": 33527 },
+          { "key": "c", "time": 33679.000000000015 },
+          { "key": "c", "time": 33840.000000000015 },
+          { "key": "c", "time": 34511 },
+          { "key": "c", "time": 34644 },
+          { "key": "c", "time": 34800 },
+          { "key": "c", "time": 34967 },
+          { "key": "c", "time": 35123 },
+          { "key": "c", "time": 35284 },
+          { "key": "c", "time": 35479 },
+          { "key": "c", "time": 35659 },
+          { "key": "c", "time": 35827 },
+          { "key": "c", "time": 36034 },
+          { "key": "c", "time": 36182.000000000015 },
+          { "key": "c", "time": 36370 },
+          { "key": "c", "time": 36528 },
+          { "key": "c", "time": 36700.000000000015 },
+          { "key": "c", "time": 36850 },
+          { "key": "x", "time": 37009 },
+          { "key": "c", "time": 37033 },
+          { "key": "c", "time": 37202 },
+          { "key": "c", "time": 37359 },
+          { "key": "c", "time": 37544 },
+          { "key": "c", "time": 37719 },
+          { "key": "c", "time": 37871 },
+          { "key": "x", "time": 37994 },
+          { "key": "c", "time": 38052 },
+          { "key": "x", "time": 38184 },
+          { "key": "c", "time": 38245 },
+          { "key": "x", "time": 38357 },
+          { "key": "c", "time": 38425 },
+          { "key": "x", "time": 38543 },
+          { "key": "c", "time": 38593.000000000015 },
+          { "key": "c", "time": 38750 },
+          { "key": "x", "time": 38831.000000000015 },
+          { "key": "c", "time": 38923.000000000015 },
+          { "key": "x", "time": 39026 },
+          { "key": "c", "time": 39093.000000000015 },
+          { "key": "x", "time": 39184 },
+          { "key": "c", "time": 39244 },
+          { "key": "x", "time": 39365 },
+          { "key": "c", "time": 39401 },
+          { "key": "c", "time": 39559 },
+          { "key": "c", "time": 39707 },
+          { "key": "r", "time": 42000 },
+          { "key": "c", "time": 67679.00000000001 },
+          { "key": "c", "time": 67824 },
+          { "key": "c", "time": 67980.00000000001 },
+          { "key": "c", "time": 69861.00000000001 },
+          { "key": "c", "time": 70019 },
+          { "key": "c", "time": 70177.99999999999 },
+          { "key": "c", "time": 70328 },
+          { "key": "c", "time": 70503 },
+          { "key": "c", "time": 70662 },
+          { "key": "c", "time": 70805 },
+          { "key": "c", "time": 70955 },
+          { "key": "c", "time": 71127 },
+          { "key": "c", "time": 71288 },
+          { "key": "c", "time": 71460 },
+          { "key": "c", "time": 71637 },
+          { "key": "c", "time": 71779.00000000003 },
+          { "key": "c", "time": 71922.00000000003 }
+        ];
+
+        function startPlayback(events = recordedEvents, isPreset = false) {
+            if (events.length === 0) return;
             isPlayingPlayback = true;
             playBtn.style.display = 'none';
             downloadBtn.style.display = 'none';
             importBtn.style.display = 'none';
+            playPresetBtn.style.display = 'none';
             stopPlayBtn.style.display = 'inline-block';
             recordBtn.style.display = 'none';
-            statusEl.textContent = 'Spiele Aufnahme ab...';
+            statusEl.textContent = isPreset ? 'Spiele Preset ab...' : 'Spiele Aufnahme ab...';
 
             playbackTimeouts = [];
             let maxTime = 0;
 
-            recordedEvents.forEach(evt => {
+            events.forEach(evt => {
                 if (evt.time > maxTime) maxTime = evt.time;
                 const timeoutId = setTimeout(() => {
                     const pad = padByKey[evt.key];
@@ -1032,9 +1131,17 @@
             isPlayingPlayback = false;
             playbackTimeouts.forEach(id => clearTimeout(id));
             playbackTimeouts = [];
-            playBtn.style.display = 'inline-block';
-            downloadBtn.style.display = recordedEvents.length > 0 ? 'inline-block' : 'none';
+            
+            if (recordedEvents.length > 0) {
+                playBtn.style.display = 'inline-block';
+                downloadBtn.style.display = 'inline-block';
+            } else {
+                playBtn.style.display = 'none';
+                downloadBtn.style.display = 'none';
+            }
+            
             importBtn.style.display = 'inline-block';
+            playPresetBtn.style.display = 'inline-block';
             stopPlayBtn.style.display = 'none';
             recordBtn.style.display = 'inline-block';
             statusEl.textContent = 'Wiedergabe beendet.';
@@ -1092,7 +1199,15 @@
             if (isPlayingPlayback) {
                 stopPlayback();
             } else {
-                startPlayback();
+                startPlayback(recordedEvents, false);
+            }
+        });
+
+        playPresetBtn.addEventListener('click', () => {
+            if (isPlayingPlayback) {
+                stopPlayback();
+            } else {
+                startPlayback(presetEvents, true);
             }
         });
 
